@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grain Extensions</title>
+<style>
+  body{font:15px/1.5 system-ui,sans-serif;max-width:920px;margin:2rem auto;padding:0 1rem;color:#222}
+  h1{font-size:1.6rem}
+  .grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .card{border:1px solid #e5e5e5;border-radius:12px;padding:1rem}
+  .meta{color:#666;font-size:.85rem}
+  .reviewed{color:#888;font-size:.75rem}
+  .trust{padding:.05rem .4rem;border-radius:4px;font-size:.75rem}
+  .trust.verified{background:#d1fae5;color:#065f46} .trust.core{background:#e0e7ff;color:#3730a3}
+  .flags{list-style:none;padding:0;margin:.5rem 0} .flag{color:#b45309;font-size:.75rem}
+  .open{display:inline-block;margin-top:.5rem;font-size:.85rem}
+  footer{margin-top:2rem;color:#888;font-size:.8rem}
+</style></head>
+<body>
+<h1>Grain Extensions</h1>
+<p>If it is listed here, a human read its source at that exact version. Installing
+happens inside Grain — this page only opens the store.</p>
+<div class="grid"><article class="card">
+  <h2>Hello Transform</h2>
+  <p class="meta">example · v1.0.0 · <span class="trust verified">verified</span></p>
+  <p class="reviewed">Reviewed 2026-07-23 at —</p>
+  <ul class="flags"></ul>
+  <a class="open" href="grain://store/com.example.hello">Open in Grain</a>
+</article></div>
+<footer>Generated from a signed catalogue. The Grain app verifies every artifact
+against a pinned key; this site is a shop window only.</footer>
+</body></html>
