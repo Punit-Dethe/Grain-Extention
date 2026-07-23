@@ -1,0 +1,13 @@
+# The registry's own ignore. Secret signing keys NEVER live here (they stay in
+# the maintainer's registry-keys/ outside any repo, and move to removable media
+# at launch). This is a safety net.
+*.key
+registry-keys/
+
+# Large built artifacts are published as GitHub Releases, not tracked in git.
+# The index + signatures ARE tracked (small, signed). Keep blobs out of git.
+v1/blob/
+
+# Generated public site output.
+site/dist/
+node_modules/

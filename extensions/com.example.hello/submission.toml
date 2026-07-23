@@ -1,0 +1,23 @@
+# Example submission. One directory per extension id under `extensions/`.
+# You submit a SOURCE POINTER — never a built artifact. CI builds from your
+# pinned commit; a human reads that exact source before it is published.
+
+# Reverse-DNS, globally unique, must match the manifest `id`.
+id = "com.example.hello"
+
+# A public source repository and the EXACT tag + commit to build.
+source_repo = "https://github.com/example/grain-hello"
+tag = "v1.0.0"
+commit = "0000000000000000000000000000000000000000"
+
+# One line shown in the store card; full copy goes in README.md beside this file.
+summary = "A friendly hello-world transcript transform."
+
+# At least one category.
+categories = ["utilities"]
+
+# SPDX licence identifier. A licence is required (CI fails without one).
+license = "MIT"
+
+# A contact the reviewer can reach (email or GitHub handle).
+contact = "@example"
