@@ -1,0 +1,76 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# build-and-check — runs the AUTHOR'S untrusted build + all static checks.
+#
+# WHY THIS JOB HOLDS NO SECRETS AND HAS NO NETWORK EGRESS (do not "simplify"):
+# This is the exact job that took over Open VSX in 2025 (F-7). Their nightly
+# workflow ran `npm install` over untrusted extension code IN A JOB THAT HELD A
+# PUBLISH TOKEN. `npm/bun install` runs arbitrary build scripts — from the
+# extension and every transitive dependency — so any of them could read the
+# token. Because we build authors' code ourselves, we ARE the registry that
+# attack targets. The mitigation is ~10 lines of YAML: this job references no
+# `secrets:` and blocks egress; the `publish` job (separate file) holds the key
+# and runs no untrusted code. NEVER fold these into one workflow.
+# ─────────────────────────────────────────────────────────────────────────────
+name: build-and-check
+
+on:
+  pull_request:
+    paths:
+      - "extensions/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    # No `environment:` and no `secrets:` are referenced anywhere in this job.
+    steps:
+      - name: Check out the registry (the submission)
+        uses: actions/checkout@v4
+
+      - name: Read submission.toml (source repo + pinned commit)
+        id: sub
+        run: |
+          # Resolve the changed extension dir and export its source pointer.
+          # (A helper action/script parses extensions/<id>/submission.toml.)
+          ./ci/read-submission.sh
+
+      - name: Check out the author's source at the pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.sub.outputs.source_repo }}
+          ref: ${{ steps.sub.outputs.commit }}
+          path: source
+
+      # ── Egress is blocked for every step that runs untrusted code. ──────────
+      # A dependency install may run arbitrary scripts; they must not be able to
+      # phone home or exfiltrate. Enforced with a runner-level firewall that
+      # allowlists only the package registry, or an offline vendored install.
+      - name: Block network egress (allowlist only the registry)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            registry.npmjs.org:443
+            registry.bun.sh:443
+
+      - name: Install + build (untrusted)
+        working-directory: source
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+
+      - name: Static checks (manifest, capabilities, Unicode, size, typosquat)
+        run: |
+          # grain-extension-checks is the SAME checker `grain-ext doctor` runs
+          # locally, so a submission that passed doctor passes here first time.
+          grain-ext doctor --project source
+          grain-registry check-submission --dir extensions
+
+      - name: Save check outputs as artifacts (audit trail / future dashboard)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: check-results
+          path: ci-out/

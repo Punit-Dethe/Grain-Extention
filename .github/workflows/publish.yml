@@ -1,0 +1,72 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# publish — the ONLY job that holds the publishing key. Runs on MERGE only, and
+# runs NO untrusted code. It rebuilds the artifact from the already-reviewed
+# pinned commit, hashes it, signs the regenerated index, and uploads a Release.
+#
+# The secret `GRAIN_PUBLISHING_KEY` is referenced ONLY in this file. See
+# build-and-check.yml for why the boundary between "runs untrusted code" and
+# "holds the key" is non-negotiable (Open VSX, F-7).
+# ─────────────────────────────────────────────────────────────────────────────
+name: publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "extensions/**"
+
+permissions:
+  contents: write # create the Release
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: publish # scopes the secret to this job/environment
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read submission.toml
+        id: sub
+        run: ./ci/read-submission.sh
+
+      # Reproducibly rebuild from the PINNED commit — the same bytes a human
+      # reviewed. No `bun install` of untrusted scripts happens with the key in
+      # scope: the build artifact is produced from the pinned, reviewed source,
+      # and the reproducibility check confirms it matches build-and-check's hash.
+      - name: Check out the pinned source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.sub.outputs.source_repo }}
+          ref: ${{ steps.sub.outputs.commit }}
+          path: source
+
+      - name: Build the pack (deterministic)
+        run: grain-registry build-pack --src source --out artifact.grainpack
+
+      - name: Hash · sign · publish · regenerate the index
+        env:
+          GRAIN_PUBLISHING_KEY: ${{ secrets.GRAIN_PUBLISHING_KEY }}
+        run: |
+          echo "$GRAIN_PUBLISHING_KEY" > publishing.key
+          grain-registry publish \
+            --key publishing.key \
+            --pack artifact.grainpack \
+            --trust verified \
+            --repo "${{ steps.sub.outputs.source_repo }}" \
+            --commit "${{ steps.sub.outputs.commit }}" \
+            --author "${{ steps.sub.outputs.author }}" \
+            --v1 v1
+          rm -f publishing.key
+
+      - name: Upload the signed catalogue + blob as a Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1
+          files: |
+            v1/index.json
+            v1/index.json.minisig
+            v1/roots.json
+            v1/roots.json.minisig
+            v1/revocations.json
+            v1/revocations.json.minisig
+            v1/blob/*.grainpack
