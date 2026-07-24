@@ -13,7 +13,7 @@
     "settings": [
       {
         "key": "actions",
-        "label": "Voice actions",
+        "label": "",
         "description": "Say a trigger and Grain opens its websites and apps, then removes the trigger from your text.",
         "kind": "list",
         "itemLabel": "action",

@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 4,
-  "expires": "2026-08-23T11:28:36Z",
+  "version": 5,
+  "expires": "2026-08-23T11:52:10Z",
   "entries": [
     {
       "id": "com.example.hello",
@@ -53,8 +53,8 @@
         "open:app",
         "settings"
       ],
-      "sha256": "d09329ba454cdcdf90f8be40cdb10c58438a92c8b48f617f3dd8a6afbc5d1756",
-      "size": 3839,
+      "sha256": "2fc55bd25f2d53eb702eb6d3f083ed00056fdbf36b16a6a5c0beebb49fecdf35",
+      "size": 3826,
       "min_grain_api": "^1.0",
       "repo": "https://github.com/Punit-Dethe/Grain-Extention",
       "source_commit": "genesis",
