@@ -1,0 +1,12 @@
+# The Agent centre layout — a first-party surface-variant pack (SPEC §10.2),
+# built from the Grain repo by our own CI, so it is `core` by construction. It
+# is the canonical example of a pure-data variant extension.
+
+id = "grain.agent-center-layout"
+source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
+tag = "v1.0.0"
+commit = "0000000000000000000000000000000000000000"
+summary = "An alternative centred look for the Agent's reply panel."
+categories = ["appearance"]
+license = "MIT"
+contact = "@Punit-Dethe"

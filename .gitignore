@@ -4,9 +4,10 @@
 *.key
 registry-keys/
 
-# Large built artifacts are published as GitHub Releases, not tracked in git.
-# The index + signatures ARE tracked (small, signed). Keep blobs out of git.
-v1/blob/
+# Dev hosting: the whole v1/ tree (index, sigs, and content-addressed blobs) is
+# committed and served over raw.githubusercontent.com, which supports paths.
+# (Production may move to GitHub Releases / Pages — a signed roots.json change,
+# not an app change, since base URLs live in the signed roots.)
 
 # Generated public site output.
 site/dist/
