@@ -1,0 +1,246 @@
+<!-- App Modes — the custom settings card (SPEC §4.1 Level 3). Sandboxed iframe;
+     window.grain is the only channel out, every call capability-checked in Rust.
+     Stores rules under the extension's own `modes` setting, the shape main.js
+     reads: [{ id, name, match:{kind,value}, prompt, enabled }] -->
+<meta charset="utf-8" />
+<style>
+  :root {
+    --paper: #faf8f3; --sunken: #efeae1; --raised: #ffffff;
+    --line: #e5dfd2; --ink: #17150f; --soft: #5b564c; --faint: #938d80;
+    --accent: #d8a43c; --accent-ink: #17150f; --danger: #b4462f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #16140f; --sunken: #1e1b15; --raised: #201d16;
+      --line: #322d23; --ink: #f3efe6; --soft: #b7b0a2; --faint: #7d7668;
+      --accent: #d8a43c; --accent-ink: #17150f; --danger: #e0765c;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font: 13px/1.45 -apple-system, "Segoe UI", Inter, system-ui, sans-serif; color: var(--ink); background: transparent; padding: 2px; }
+  .card { background: var(--raised); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .head { padding: 14px 16px 10px; }
+  .title { font-size: 14px; font-weight: 600; }
+  .sub { color: var(--soft); font-size: 12px; margin-top: 3px; }
+  .body { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 14px; }
+  label.fl { display: block; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--soft); margin-bottom: 6px; }
+  input.txt, textarea.txt {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px;
+    background: var(--sunken); color: var(--ink); font: inherit; outline: none; resize: vertical;
+  }
+  input.txt:focus, textarea.txt:focus { border-color: var(--accent); }
+  .applies { display: flex; align-items: center; gap: 8px; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; flex: none; }
+  .seg button { display: flex; align-items: center; gap: 4px; padding: 7px 10px; font: inherit; font-size: 12px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--soft); cursor: pointer; }
+  .seg button:last-child { border-right: 0; }
+  .seg button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn { padding: 7px 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--sunken); color: var(--ink); font: inherit; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .btn:hover { border-color: var(--faint); }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .tpls { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+  .tpl { padding: 3px 9px; border-radius: 7px; font-size: 12px; border: 1px solid var(--line); background: transparent; color: var(--soft); cursor: pointer; }
+  .tpl:hover { color: var(--ink); border-color: var(--accent); }
+  .head-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .row-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  .list { border-top: 1px solid var(--line); }
+  .empty { padding: 22px 16px; text-align: center; color: var(--faint); font-size: 12px; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); }
+  .item:first-child { border-top: 0; }
+  .item.off { opacity: .5; }
+  .grow { flex: 1; min-width: 0; }
+  .name-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .match { display: inline-flex; align-items: center; gap: 4px; flex: none; font: 11.5px ui-monospace, monospace; color: var(--soft); background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; max-width: 180px; }
+  .match span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prompt { margin: 2px 0 0; font-size: 12px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ic { border: 0; background: transparent; color: var(--soft); cursor: pointer; padding: 6px; border-radius: 7px; display: inline-flex; line-height: 0; }
+  .ic:hover { color: var(--accent); background: rgba(216,164,60,.12); }
+  .sw { width: 32px; height: 18px; border-radius: 999px; background: #0a0a0a; border: 0; position: relative; cursor: pointer; flex: none; }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #f0ebe3; transition: transform .18s; }
+  .sw.on { background: var(--accent); }
+  .sw.on::after { transform: translateX(14px); }
+  .tools { display: flex; gap: 2px; }
+  .err { margin: 0 16px; padding: 7px 10px; border-radius: 8px; background: rgba(180,70,47,.12); color: var(--danger); font-size: 12px; }
+  svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+
+<div class="card">
+  <div class="head">
+    <div class="title">Modes</div>
+    <div class="sub">Your own instructions applied only inside a specific app or website (e.g. an “X post” mode on x.com). When the focused app matches, the transcript is reformatted with that mode's prompt.</div>
+  </div>
+  <div id="err" class="err" style="display:none"></div>
+  <div class="body">
+    <div>
+      <label class="fl">Applies in</label>
+      <div class="applies">
+        <div class="seg">
+          <button data-k="process" class="on" id="k-app"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg> App</button>
+          <button data-k="url_host" id="k-web"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg> Web</button>
+        </div>
+        <input id="match" class="txt" type="text" placeholder="App executable, e.g. Code, slack, cursor" />
+        <button class="btn" id="capture"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> <span id="cap-label">Capture</span></button>
+      </div>
+    </div>
+    <div>
+      <label class="fl" for="name">Mode name</label>
+      <input id="name" class="txt" type="text" placeholder="e.g. X post, Work email" />
+    </div>
+    <div>
+      <div class="head-row">
+        <label class="fl" for="prompt" style="margin:0">Instructions</label>
+        <div class="tpls" id="tpls"></div>
+      </div>
+      <textarea id="prompt" class="txt" rows="4" placeholder="Instructions for this app/site. e.g. 'Rewrite as a tweet under 280 characters in my voice.'"></textarea>
+    </div>
+    <div class="row-actions">
+      <button class="btn" id="cancel" style="display:none">Cancel</button>
+      <button class="btn primary" id="submit">Add mode</button>
+    </div>
+  </div>
+  <div id="list" class="list"></div>
+</div>
+
+<script>
+(function () {
+  var g = window.grain;
+  var ICON = {
+    app: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>',
+    web: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>',
+    pencil: '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2 2 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+    trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>'
+  };
+  var TEMPLATES = [
+    { name: "Email", prompt: "Rewrite this dictated transcript as a clear, professional email body. Fix grammar, capitalization, and punctuation, and organize it into natural paragraphs with a polite, professional tone. Do NOT invent a greeting, sign-off, or subject line, and do not add anything that was not said. Keep the original language. Return only the email body." },
+    { name: "Coding", prompt: "Format this dictated transcript as a concise technical message. Correct spoken programming terms to their real form (e.g. \"snake case\" -> snake_case, \"use effect\" -> useEffect), wrap identifiers, symbols, and code in backticks, and keep it terse. Do not implement or explain anything that was not asked. Keep the original language. Return only the cleaned text." },
+    { name: "X post", prompt: "Rewrite this dictated transcript as a single social post in the user's own voice. Keep it under 280 characters, casual and punchy. Do not add hashtags or emoji unless they were dictated. Return only the post text." },
+    { name: "Chat", prompt: "Lightly clean this dictated transcript for a casual chat message. Fix obvious spelling and punctuation errors but keep the user's casual tone, slang, and phrasing - do not formalize or restructure. Keep the original language. Return only the message." }
+  ];
+  var state = { editing: null, kind: "process", modes: [], capturing: false };
+  var $ = function (id) { return document.getElementById(id); };
+  function showErr(m) { var e = $("err"); if (!m) { e.style.display = "none"; return; } e.textContent = m; e.style.display = "block"; }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+
+  function setKind(k) {
+    state.kind = k;
+    $("k-app").classList.toggle("on", k === "process");
+    $("k-web").classList.toggle("on", k === "url_host");
+    $("match").placeholder = k === "process" ? "App executable, e.g. Code, slack, cursor" : "Website host, e.g. x.com, mail.google.com";
+  }
+  function normValue(kind, v) {
+    v = (v || "").trim();
+    return kind === "process"
+      ? v.replace(/\.exe$/i, "").toLowerCase()
+      : v.replace(/^https?:\/\//i, "").replace(/\/.*$/, "").replace(/^www\./i, "").toLowerCase();
+  }
+
+  function load() {
+    g.settings.get("modes").then(function (v) { state.modes = Array.isArray(v) ? v : []; renderList(); })
+      .catch(function (e) { showErr(String(e && e.message || e)); });
+  }
+  function persist(next) {
+    state.modes = next; renderList();
+    g.settings.set("modes", next).catch(function (e) { showErr(String(e && e.message || e)); load(); });
+  }
+
+  function capture() {
+    if (state.capturing) return;
+    state.capturing = true;
+    var n = 3; $("cap-label").textContent = "Switch to your app… " + n; $("capture").disabled = true;
+    var tick = setInterval(function () {
+      n -= 1;
+      if (n > 0) { $("cap-label").textContent = "Switch to your app… " + n; return; }
+      clearInterval(tick); state.capturing = false; $("capture").disabled = false; $("cap-label").textContent = "Capture";
+      g.focusedApp().then(function (app) {
+        if (!app) { showErr("Couldn't detect the focused app. Try again."); return; }
+        showErr("");
+        if (app.urlHost) { setKind("url_host"); $("match").value = app.urlHost; if (!$("name").value.trim()) $("name").value = app.urlHost; }
+        else if (app.exe) { setKind("process"); $("match").value = app.exe; if (!$("name").value.trim()) $("name").value = app.name || app.exe; }
+        else showErr("Couldn't resolve the focused app.");
+      }).catch(function (e) { showErr(String(e && e.message || e)); });
+    }, 1000);
+  }
+
+  function submit() {
+    showErr("");
+    var name = $("name").value.trim();
+    var raw = $("match").value.trim();
+    var prompt = $("prompt").value.trim();
+    if (!name) { showErr("Name your mode."); return; }
+    if (!raw) { showErr("Choose the app or website it applies in."); return; }
+    if (!prompt) { showErr("Add the instructions for this mode."); return; }
+    var value = normValue(state.kind, raw);
+    var mode = { name: name, match: { kind: state.kind, value: value }, prompt: prompt };
+    var next = state.modes.slice();
+    if (state.editing != null) {
+      next[state.editing] = Object.assign({}, state.modes[state.editing], mode);
+    } else {
+      mode.id = (self.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
+      mode.enabled = true;
+      next.push(mode);
+    }
+    resetForm();
+    persist(next);
+  }
+  function resetForm() {
+    state.editing = null; setKind("process");
+    $("name").value = ""; $("match").value = ""; $("prompt").value = "";
+    $("cancel").style.display = "none"; $("submit").textContent = "Add mode"; showErr("");
+  }
+  function edit(i) {
+    var m = state.modes[i]; state.editing = i;
+    $("name").value = m.name || ""; setKind(m.match && m.match.kind === "url_host" ? "url_host" : "process");
+    $("match").value = (m.match && m.match.value) || ""; $("prompt").value = m.prompt || "";
+    $("cancel").style.display = ""; $("submit").textContent = "Update mode"; showErr("");
+  }
+
+  function renderList() {
+    var box = $("list");
+    if (!state.modes.length) { box.innerHTML = '<div class="empty">No modes yet. Add one above to apply your own formatting in a specific app or website.</div>'; return; }
+    box.innerHTML = "";
+    state.modes.forEach(function (m, i) {
+      var on = m.enabled !== false;
+      var isWeb = m.match && m.match.kind === "url_host";
+      var item = document.createElement("div"); item.className = "item" + (on ? "" : " off");
+      item.innerHTML =
+        '<div class="grow">' +
+          '<div class="name-row">' +
+            '<span class="name">' + esc(m.name || "") + '</span>' +
+            '<span class="match">' + (isWeb ? ICON.web : ICON.app) + '<span>' + esc(m.match && m.match.value) + '</span></span>' +
+          '</div>' +
+          '<p class="prompt">' + esc(m.prompt || "") + '</p>' +
+        '</div>' +
+        '<button class="sw ' + (on ? "on" : "") + '" data-a="toggle" title="Enable / disable"></button>' +
+        '<div class="tools">' +
+          '<button class="ic" data-a="edit" title="Edit">' + ICON.pencil + '</button>' +
+          '<button class="ic" data-a="del" title="Delete">' + ICON.trash + '</button>' +
+        '</div>';
+      item.querySelectorAll("[data-a]").forEach(function (b) {
+        var a = b.getAttribute("data-a");
+        b.onclick = function () {
+          if (a === "toggle") { var n = state.modes.slice(); n[i] = Object.assign({}, m, { enabled: !on }); persist(n); }
+          else if (a === "edit") edit(i);
+          else if (a === "del") { if (state.editing === i) resetForm(); var n = state.modes.slice(); n.splice(i, 1); persist(n); }
+        };
+      });
+      box.appendChild(item);
+    });
+  }
+
+  // Templates
+  var tp = $("tpls");
+  TEMPLATES.forEach(function (t) {
+    var b = document.createElement("button"); b.className = "tpl"; b.textContent = t.name;
+    b.onclick = function () { if (!$("name").value.trim()) $("name").value = t.name; $("prompt").value = t.prompt; };
+    tp.appendChild(b);
+  });
+  $("k-app").onclick = function () { setKind("process"); };
+  $("k-web").onclick = function () { setKind("url_host"); };
+  $("capture").onclick = capture;
+  $("submit").onclick = submit;
+  $("cancel").onclick = resetForm;
+  load();
+})();
+</script>

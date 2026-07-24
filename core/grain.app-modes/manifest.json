@@ -1,0 +1,36 @@
+{
+  "id": "grain.app-modes",
+  "name": "App Modes",
+  "version": "1.0.0",
+  "grainApi": "^1.0",
+  "tier": "scripted",
+  "description": "Your own formatting instructions, applied only inside a specific app or website — an 'X post' mode on x.com, a 'Work email' mode in Outlook. When the focused app matches, the transcript is reformatted with that mode's prompt. Its editor renders as a custom card right below the Context settings. A worked example of the transform hook with capture:app + llm.",
+  "repository": "https://github.com/Punit-Dethe/Grain-Extention",
+  "entry": "main.js",
+  "permissions": [
+    "transform:transcript",
+    "capture:app",
+    "llm",
+    "settings"
+  ],
+  "activation": ["onTransform"],
+  "contributes": {
+    "settings": [
+      {
+        "key": "modes-card",
+        "label": "",
+        "kind": "panel",
+        "uiSource": "config.html",
+        "searchTerms": [
+          "modes",
+          "app mode",
+          "context",
+          "per app",
+          "formatting"
+        ],
+        "anchor": "context.after",
+        "order": 10
+      }
+    ]
+  }
+}
