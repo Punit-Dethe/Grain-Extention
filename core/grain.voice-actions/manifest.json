@@ -1,0 +1,24 @@
+{
+  "id": "grain.voice-actions",
+  "name": "Voice Actions",
+  "version": "1.0.0",
+  "grainApi": "^1.0",
+  "tier": "scripted",
+  "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. The externalised form of Grain's built-in voice actions, and a worked example of the transform hook plus the open:url / open:app capabilities.",
+  "repository": "https://github.com/Punit-Dethe/Grain-Extention",
+  "entry": "main.js",
+  "permissions": ["transform:transcript", "open:url", "open:app", "storage", "surface:workspace"],
+  "activation": ["onTransform", "onShortcut:configure"],
+  "surfaces": {
+    "workspace": {
+      "title": "Voice Actions",
+      "min_size": [560, 460],
+      "ui_source": "config.html"
+    }
+  },
+  "contributes": {
+    "shortcuts": [
+      { "id": "configure", "label": "Configure Voice Actions", "default_binding": "Ctrl+Alt+Shift+V" }
+    ]
+  }
+}

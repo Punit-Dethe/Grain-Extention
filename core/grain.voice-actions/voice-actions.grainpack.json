@@ -1,0 +1,43 @@
+{
+  "manifest": {
+    "activation": [
+      "onTransform",
+      "onShortcut:configure"
+    ],
+    "contributes": {
+      "shortcuts": [
+        {
+          "default_binding": "Ctrl+Alt+Shift+V",
+          "id": "configure",
+          "label": "Configure Voice Actions"
+        }
+      ]
+    },
+    "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. The externalised form of Grain's built-in voice actions, and a worked example of the transform hook plus the open:url / open:app capabilities.",
+    "entry_source": "// Voice Actions — the worker. Runs on the finalized transcript: matches the\r\n// user's configured triggers, fires their side effects (open a URL / launch a\r\n// user-approved app), and returns the transcript with the trigger removed.\r\n//\r\n// Security note: this code never launches anything on its own. `grain.open.url`\r\n// is scheme-allowlisted by the host, and `grain.open.app` only launches a path\r\n// the user picked through `grain.open.pickApp()` (see config.html). The worker\r\n// merely relays the user's own configured rules.\r\n\r\nfunction normalize(s) {\r\n  return String(s || \"\").toLowerCase().trim();\r\n}\r\n\r\n// Open the config surface from the contributed shortcut.\r\ngrain.onShortcut(function (id) {\r\n  if (id === \"configure\") grain.workspace.open();\r\n});\r\n\r\n// The transform hook: strip matched triggers, fire their targets.\r\ngrain.onTransform(function (text) {\r\n  return grain.storage.get(\"rules\").then(function (rules) {\r\n    rules = Array.isArray(rules) ? rules : [];\r\n    if (!rules.length) return text;\r\n\r\n    var out = text;\r\n    var fired = [];\r\n    rules.forEach(function (r) {\r\n      var trigger = normalize(r && r.trigger);\r\n      if (!trigger) return;\r\n      var idx = out.toLowerCase().indexOf(trigger);\r\n      if (idx !== -1) {\r\n        out = out.slice(0, idx) + out.slice(idx + trigger.length);\r\n        fired.push(r);\r\n      }\r\n    });\r\n\r\n    // Fire-and-forget so a slow launch never blocks the paste path.\r\n    fired.forEach(function (r) {\r\n      try {\r\n        if (r.kind === \"app\") grain.open.app(String(r.target));\r\n        else grain.open.url(String(r.target));\r\n      } catch (e) {\r\n        /* a launch failure must never break the transcript */\r\n      }\r\n    });\r\n\r\n    return out.replace(/\\s+/g, \" \").trim();\r\n  });\r\n});\r\n",
+    "grainApi": "^1.0",
+    "id": "grain.voice-actions",
+    "name": "Voice Actions",
+    "permissions": [
+      "transform:transcript",
+      "open:url",
+      "open:app",
+      "storage",
+      "surface:workspace"
+    ],
+    "repository": "https://github.com/Punit-Dethe/Grain-Extention",
+    "surfaces": {
+      "workspace": {
+        "min_size": [
+          560,
+          460
+        ],
+        "title": "Voice Actions",
+        "ui_source": "<!doctype html>\r\n<meta charset=\"utf-8\" />\r\n<style>\r\n  body { font: 14px system-ui, sans-serif; padding: 18px; background: #f7f4ee; color: #211f1b; }\r\n  h2 { margin: 0 0 4px; }\r\n  p { color: #6b6862; margin: 0 0 14px; }\r\n  .row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }\r\n  input { padding: 7px 9px; border: 1px solid #d9d3c7; border-radius: 8px; flex: 1; min-width: 140px; }\r\n  button { padding: 7px 12px; border: 1px solid #d9d3c7; border-radius: 8px; background: #fff; cursor: pointer; }\r\n  button:hover { border-color: #b7afa0; }\r\n  ul { list-style: none; padding: 0; }\r\n  li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #eee6d8; border-radius: 8px; margin-bottom: 6px; }\r\n  li .t { font-weight: 600; }\r\n  li .g { color: #6b6862; flex: 1; word-break: break-all; }\r\n  .kind { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: #eee6d8; color: #6b6862; }\r\n</style>\r\n<main>\r\n  <h2>Voice Actions</h2>\r\n  <p>Say a trigger and Grain opens the target, then removes the trigger from your text.</p>\r\n  <div class=\"row\">\r\n    <input id=\"trig\" placeholder=\"trigger — e.g. open docs\" />\r\n    <input id=\"url\" placeholder=\"https://example.com\" />\r\n    <button id=\"add-url\">Add link</button>\r\n    <button id=\"add-app\">Add app…</button>\r\n  </div>\r\n  <ul id=\"list\"></ul>\r\n</main>\r\n<script>\r\n  function load() {\r\n    return grain.storage.get(\"rules\").then(function (r) { return Array.isArray(r) ? r : []; });\r\n  }\r\n  function save(rules) { return grain.storage.set(\"rules\", rules).then(render); }\r\n  function render() {\r\n    load().then(function (rules) {\r\n      var ul = document.getElementById(\"list\");\r\n      ul.innerHTML = \"\";\r\n      rules.forEach(function (r, i) {\r\n        var li = document.createElement(\"li\");\r\n        var kind = document.createElement(\"span\");\r\n        kind.className = \"kind\";\r\n        kind.textContent = r.kind === \"app\" ? \"app\" : \"link\";\r\n        var t = document.createElement(\"span\");\r\n        t.className = \"t\";\r\n        t.textContent = r.trigger;\r\n        var g = document.createElement(\"span\");\r\n        g.className = \"g\";\r\n        g.textContent = r.target;\r\n        var rm = document.createElement(\"button\");\r\n        rm.textContent = \"Remove\";\r\n        rm.onclick = function () { rules.splice(i, 1); save(rules); };\r\n        li.appendChild(kind); li.appendChild(t); li.appendChild(g); li.appendChild(rm);\r\n        ul.appendChild(li);\r\n      });\r\n    });\r\n  }\r\n  document.getElementById(\"add-url\").onclick = function () {\r\n    var t = document.getElementById(\"trig\").value.trim();\r\n    var u = document.getElementById(\"url\").value.trim();\r\n    if (!t || !u) return;\r\n    load().then(function (rules) {\r\n      rules.push({ trigger: t, kind: \"url\", target: u });\r\n      save(rules);\r\n      document.getElementById(\"trig\").value = \"\";\r\n      document.getElementById(\"url\").value = \"\";\r\n    });\r\n  };\r\n  document.getElementById(\"add-app\").onclick = function () {\r\n    var t = document.getElementById(\"trig\").value.trim();\r\n    if (!t) { alert(\"Enter a trigger word first.\"); return; }\r\n    // The host opens the native chooser and records the picked app as approved\r\n    // for this extension — the only way open.app can later launch it.\r\n    grain.open.pickApp().then(function (path) {\r\n      if (!path) return;\r\n      load().then(function (rules) {\r\n        rules.push({ trigger: t, kind: \"app\", target: path });\r\n        save(rules);\r\n        document.getElementById(\"trig\").value = \"\";\r\n      });\r\n    });\r\n  };\r\n  render();\r\n</script>\r\n"
+      }
+    },
+    "tier": "scripted",
+    "version": "1.0.0"
+  },
+  "payloads": {}
+}

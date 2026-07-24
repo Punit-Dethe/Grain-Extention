@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 2,
-  "expires": "2026-08-23T09:56:13Z",
+  "version": 3,
+  "expires": "2026-08-23T10:59:42Z",
   "entries": [
     {
       "id": "com.example.hello",
@@ -33,6 +33,30 @@
       "sha256": "919bd59ebbeace1d94d10e69dccf354290ae54fb33ff52163c83868612456459",
       "size": 575,
       "min_grain_api": "1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "genesis",
+      "author": "Punit-Dethe",
+      "reviewed_at": "2026-07-24",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-24",
+      "stars": 0
+    },
+    {
+      "id": "grain.voice-actions",
+      "name": "Voice Actions",
+      "version": "1.0.0",
+      "tier": "scripted",
+      "trust": "core",
+      "capabilities": [
+        "transform:transcript",
+        "open:url",
+        "open:app",
+        "storage",
+        "surface:workspace"
+      ],
+      "sha256": "400dbce2b1de499a83c076e6368500238797ba4c1b59c602c5a730c7677cb459",
+      "size": 6760,
+      "min_grain_api": "^1.0",
       "repo": "https://github.com/Punit-Dethe/Grain-Extention",
       "source_commit": "genesis",
       "author": "Punit-Dethe",

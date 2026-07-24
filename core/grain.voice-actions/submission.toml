@@ -1,0 +1,12 @@
+# Voice Actions — a first-party scripted extension built from the Grain repo by
+# our own CI (`core` trust). The externalised form of Grain's built-in voice
+# actions, and the reference example for the transform hook + open:url/open:app.
+
+id = "grain.voice-actions"
+source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
+tag = "v1.0.0"
+commit = "0000000000000000000000000000000000000000"
+summary = "Say a trigger to open apps and websites; the trigger is stripped from your text."
+categories = ["productivity"]
+license = "MIT"
+contact = "@Punit-Dethe"
