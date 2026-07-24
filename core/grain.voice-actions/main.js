@@ -23,7 +23,8 @@ grain.onTransform(function (text) {
     var out = text;
     var fired = [];
     actions.forEach(function (a) {
-      var trigger = normalize(a && a.trigger);
+      if (!a || a.enabled === false) return;
+      var trigger = normalize(a.trigger);
       if (!trigger) return;
       var idx = out.toLowerCase().indexOf(trigger);
       if (idx !== -1) {

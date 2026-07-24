@@ -4,38 +4,33 @@
   "version": "1.0.0",
   "grainApi": "^1.0",
   "tier": "scripted",
-  "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. Its settings render right inside the Snippets tab — no separate window. A worked example of the transform hook, the open:url / open:app capabilities, and the reusable declarative list UI.",
+  "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. Its editor renders as a custom card right below the Snippets settings — no separate window. A worked example of the transform hook, the open:url / open:app / capture:app capabilities, and the custom settings card.",
   "repository": "https://github.com/Punit-Dethe/Grain-Extention",
   "entry": "main.js",
-  "permissions": ["transform:transcript", "open:url", "open:app", "settings"],
+  "permissions": [
+    "transform:transcript",
+    "open:url",
+    "open:app",
+    "capture:app",
+    "settings"
+  ],
   "activation": ["onTransform"],
   "contributes": {
     "settings": [
       {
-        "key": "actions",
+        "key": "actions-card",
         "label": "",
-        "description": "Say a trigger and Grain opens its websites and apps, then removes the trigger from your text.",
-        "kind": "list",
-        "itemLabel": "action",
+        "kind": "panel",
+        "uiSource": "config.html",
+        "searchTerms": [
+          "voice actions",
+          "trigger",
+          "open app",
+          "open website",
+          "launch"
+        ],
         "anchor": "snippets.after",
-        "order": 10,
-        "fields": [
-          { "key": "trigger", "label": "Trigger", "kind": "string" },
-          {
-            "key": "websites",
-            "label": "Websites",
-            "kind": "list",
-            "itemLabel": "website",
-            "fields": [{ "key": "url", "label": "URL", "kind": "url" }]
-          },
-          {
-            "key": "apps",
-            "label": "Apps",
-            "kind": "list",
-            "itemLabel": "app",
-            "fields": [{ "key": "path", "label": "App", "kind": "app_path" }]
-          }
-        ]
+        "order": 10
       }
     ]
   }
