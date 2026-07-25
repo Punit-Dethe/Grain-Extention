@@ -1,81 +1,8 @@
 {
   "spec": 1,
-  "version": 19,
-  "expires": "2026-08-24T18:43:28Z",
+  "version": 23,
+  "expires": "2026-08-24T19:23:32Z",
   "entries": [
-    {
-      "id": "grain.voice-actions",
-      "name": "Voice Actions",
-      "version": "1.0.0",
-      "tier": "scripted",
-      "trust": "core",
-      "capabilities": [
-        "transform:transcript",
-        "open:url",
-        "open:app",
-        "capture:app",
-        "settings"
-      ],
-      "description": "Say a trigger phrase to open your apps and sites, and Grain strips it from what gets typed.",
-      "sha256": "1a35acb03ff7837d64ef3ff171366af5814b6b7b090e2834db043ba0f6b2fb72",
-      "size": 20975,
-      "min_grain_api": "^1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
-      "source_commit": "",
-      "author": "Grain",
-      "reviewed_at": "2026-07-25",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-25",
-      "stars": 0,
-      "installs": 0,
-      "readme": "8f033d65f9b3d2068fc05d650ab6f7edd5f7a1ac8e9c17619bb2ea9b4f4ccee5",
-      "media": [
-        {
-          "sha256": "fb88b25467ae8958d8153670c4bd8e1621817b7164b4e8dd8a06139eb581c699",
-          "kind": "webp",
-          "size": 18768
-        }
-      ],
-      "categories": [
-        "dictation"
-      ]
-    },
-    {
-      "id": "grain.app-modes",
-      "name": "App Modes",
-      "version": "1.0.0",
-      "tier": "scripted",
-      "trust": "core",
-      "capabilities": [
-        "transform:transcript",
-        "capture:app",
-        "llm",
-        "settings"
-      ],
-      "description": "Format what you dictate differently in each app or site — a post on x.com, an email in Outlook.",
-      "sha256": "f09be014b52d4fafa66c658db3d654969efacc56551d38cdc7b8b06360a3c729",
-      "size": 20639,
-      "min_grain_api": "^1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
-      "source_commit": "",
-      "author": "Grain",
-      "reviewed_at": "2026-07-25",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-25",
-      "stars": 0,
-      "installs": 0,
-      "readme": "3d705262adaa85f7dd416088181d6a6bca762b1df502aff3d7a4ee59b7eb31e1",
-      "media": [
-        {
-          "sha256": "6b12469fb377e245e4ea69606225404a1d88b908396741a98fb9bbf361c8c7dd",
-          "kind": "webp",
-          "size": 17380
-        }
-      ],
-      "categories": [
-        "dictation"
-      ]
-    },
     {
       "id": "grain.agent-center-layout",
       "name": "Agent — Centre layout",
@@ -176,29 +103,76 @@
       ]
     },
     {
-      "id": "com.example.hello",
-      "name": "Hello Transform",
-      "version": "1.0.0",
+      "id": "grain.voice-actions",
+      "name": "Voice Actions",
+      "version": "1.0.1",
       "tier": "scripted",
-      "trust": "verified",
+      "trust": "core",
       "capabilities": [
-        "transform:transcript"
+        "transform:transcript",
+        "open:url",
+        "open:app",
+        "capture:app",
+        "settings"
       ],
-      "description": "A friendly hello-world transcript transform (registry end-to-end sample).",
-      "sha256": "10046c61be5d612027adf58abdae14e8e5511f7b69826e4b913f03163880bc66",
-      "size": 549,
-      "min_grain_api": "1.0",
+      "description": "Say a trigger phrase to open your apps and sites, and Grain strips it from what gets typed.",
+      "sha256": "a8e7c3a9087f0d75ce53a426135e83ae6dab84ebaa1483be6c011003918ae665",
+      "size": 20975,
+      "min_grain_api": "^1.0",
       "repo": "https://github.com/Punit-Dethe/Grain-Extention",
       "source_commit": "",
-      "author": "example",
+      "author": "Grain",
       "reviewed_at": "2026-07-25",
       "reviewed_commit": "",
       "updated_at": "2026-07-25",
       "stars": 0,
       "installs": 0,
-      "readme": "634bd156066112f5587ee8a6f8d9d4f71f2cfa28f39c656475076b3f99242703",
+      "readme": "8f033d65f9b3d2068fc05d650ab6f7edd5f7a1ac8e9c17619bb2ea9b4f4ccee5",
+      "media": [
+        {
+          "sha256": "fb88b25467ae8958d8153670c4bd8e1621817b7164b4e8dd8a06139eb581c699",
+          "kind": "webp",
+          "size": 18768
+        }
+      ],
       "categories": [
-        "tools"
+        "dictation"
+      ]
+    },
+    {
+      "id": "grain.app-modes",
+      "name": "App Modes",
+      "version": "1.0.1",
+      "tier": "scripted",
+      "trust": "core",
+      "capabilities": [
+        "transform:transcript",
+        "capture:app",
+        "llm",
+        "settings"
+      ],
+      "description": "Format what you dictate differently in each app or site — a post on x.com, an email in Outlook.",
+      "sha256": "7e2feb21d8175cf71d44ca1af6df2e424eaf391a5772533ff5870e347a7c2fbd",
+      "size": 20639,
+      "min_grain_api": "^1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "",
+      "author": "Grain",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "3d705262adaa85f7dd416088181d6a6bca762b1df502aff3d7a4ee59b7eb31e1",
+      "media": [
+        {
+          "sha256": "6b12469fb377e245e4ea69606225404a1d88b908396741a98fb9bbf361c8c7dd",
+          "kind": "webp",
+          "size": 17380
+        }
+      ],
+      "categories": [
+        "dictation"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
   "id": "grain.voice-actions",
   "name": "Voice Actions",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "grainApi": "^1.0",
   "tier": "scripted",
   "description": "Say a trigger phrase to open your apps and sites, and Grain strips it from what gets typed.",

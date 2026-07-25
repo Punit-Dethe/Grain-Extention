@@ -35,7 +35,7 @@
     ],
     "repository": "https://github.com/Punit-Dethe/Grain-Extention",
     "tier": "scripted",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "payloads": {}
 }

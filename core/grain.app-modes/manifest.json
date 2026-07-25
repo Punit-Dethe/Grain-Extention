@@ -1,7 +1,7 @@
 {
   "id": "grain.app-modes",
   "name": "App Modes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "grainApi": "^1.0",
   "tier": "scripted",
   "description": "Format what you dictate differently in each app or site — a post on x.com, an email in Outlook.",

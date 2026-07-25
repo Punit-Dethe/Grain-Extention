@@ -4,7 +4,7 @@
 
 id = "grain.voice-actions"
 source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
-tag = "v1.0.0"
+tag = "v1.0.1"
 commit = "0000000000000000000000000000000000000000"
 summary = "Say a trigger to open apps and websites; the trigger is stripped from your text."
 categories = ["dictation"]
