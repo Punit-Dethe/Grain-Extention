@@ -42,13 +42,12 @@ content-addressed and served as small immutable blobs, so the store stays fast
 and an image can never be swapped under a published version. Keep a cover near
 16:9 and under ~200 KB.
 
-> **Not for submissions: the `builtin` tier.** A few first-party extensions
-> (Grain Space) are listed and installed exactly like yours, but their
-> implementation is compiled into Grain because they own things a sandboxed
-> worker cannot — a local embedding engine, a vector index, a native window.
-> The tier is restricted to reserved `grain.` ids and rejected at import for
-> anyone else. Everything on this page applies to `pack`, `scripted` and
-> `native`.
+> **Grain's own features are not extensions.** Snippets, Context Awareness, the
+> Agent and Grain Space ship with the app and have a tab each. Grain Space was
+> briefly listed here as a `builtin`-tier pack you could install and uninstall;
+> that tier is gone, because the implementation was always compiled into Grain
+> and the "install" was a registry row in front of it. Everything on this page
+> applies to `pack`, `scripted` and `native`, which are the real ones.
 
 ## Sharing prompts
 
