@@ -9,16 +9,30 @@
     --line: #e5dfd2; --ink: #17150f; --soft: #5b564c; --faint: #938d80;
     --accent: #d8a43c; --accent-ink: #17150f; --danger: #b4462f;
   }
+  /* The host (Grain) tells us its theme via data-grain-theme, because a
+     sandboxed iframe's prefers-color-scheme reports the OPERATING SYSTEM — which
+     is the wrong answer whenever the OS and Grain's own theme disagree. The
+     media query stays as the fallback for a card opened outside Grain. */
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper: #16140f; --sunken: #1e1b15; --raised: #201d16;
-      --line: #322d23; --ink: #f3efe6; --soft: #b7b0a2; --faint: #7d7668;
-      --accent: #d8a43c; --accent-ink: #17150f; --danger: #e0765c;
+    --paper: #16140f; --sunken: #1e1b15; --raised: #201d16;
+    --line: #322d23; --ink: #f3efe6; --soft: #b7b0a2; --faint: #7d7668;
+    --accent: #d8a43c; --accent-ink: #17150f; --danger: #e0765c;
     }
   }
+  :root[data-grain-theme="dark"] {
+    --paper: #16140f; --sunken: #1e1b15; --raised: #201d16;
+    --line: #322d23; --ink: #f3efe6; --soft: #b7b0a2; --faint: #7d7668;
+    --accent: #d8a43c; --accent-ink: #17150f; --danger: #e0765c;
+  }
+  :root[data-grain-theme="light"] {
+    --paper: #faf8f3; --sunken: #efeae1; --raised: #ffffff;
+    --line: #e5dfd2; --ink: #17150f; --soft: #5b564c; --faint: #938d80;
+    --accent: #d8a43c; --accent-ink: #17150f; --danger: #b4462f;
+  }
   * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { font: 13px/1.45 -apple-system, "Segoe UI", Inter, system-ui, sans-serif; color: var(--ink); background: transparent; padding: 2px; }
+  html, body { margin: 0; padding: 0; }
+  body { font: 13px/1.45 -apple-system, "Segoe UI", Inter, system-ui, sans-serif; color: var(--ink); background: transparent; }
   .card { background: var(--raised); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
   .head { padding: 14px 16px 10px; }
   .title { font-size: 14px; font-weight: 600; }

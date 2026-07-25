@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 10,
-  "expires": "2026-08-24T00:48:21Z",
+  "version": 12,
+  "expires": "2026-08-24T10:34:31Z",
   "entries": [
     {
       "id": "com.example.hello",
@@ -25,73 +25,6 @@
       "stars": 0,
       "installs": 0,
       "readme": ""
-    },
-    {
-      "id": "grain.voice-actions",
-      "name": "Voice Actions",
-      "version": "1.0.0",
-      "tier": "scripted",
-      "trust": "core",
-      "capabilities": [
-        "transform:transcript",
-        "open:url",
-        "open:app",
-        "capture:app",
-        "settings"
-      ],
-      "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. Its editor renders as a custom card right below the Snippets settings — no separate window. A worked example of the transform hook, the open:url / open:app / capture:app capabilities, and the custom settings card.",
-      "sha256": "d8d65119d5fd58606da14995a416717d223af5f4157adeda50e2bd1d2be30880",
-      "size": 19581,
-      "min_grain_api": "^1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
-      "source_commit": "genesis",
-      "author": "Punit-Dethe",
-      "reviewed_at": "2026-07-25",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-25",
-      "stars": 0,
-      "installs": 0,
-      "readme": "8f033d65f9b3d2068fc05d650ab6f7edd5f7a1ac8e9c17619bb2ea9b4f4ccee5",
-      "media": [
-        {
-          "sha256": "fb88b25467ae8958d8153670c4bd8e1621817b7164b4e8dd8a06139eb581c699",
-          "kind": "webp",
-          "size": 18768
-        }
-      ]
-    },
-    {
-      "id": "grain.app-modes",
-      "name": "App Modes",
-      "version": "1.0.0",
-      "tier": "scripted",
-      "trust": "core",
-      "capabilities": [
-        "transform:transcript",
-        "capture:app",
-        "llm",
-        "settings"
-      ],
-      "description": "Your own formatting instructions, applied only inside a specific app or website — an 'X post' mode on x.com, a 'Work email' mode in Outlook. When the focused app matches, the transcript is reformatted with that mode's prompt. Its editor renders as a custom card right below the Context settings. A worked example of the transform hook with capture:app + llm.",
-      "sha256": "707db9f22225185552cb7b7cece8c167c03b45ee214e63a2ff74fbb45a9931e8",
-      "size": 19365,
-      "min_grain_api": "^1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
-      "source_commit": "genesis",
-      "author": "Punit-Dethe",
-      "reviewed_at": "2026-07-25",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-25",
-      "stars": 0,
-      "installs": 0,
-      "readme": "3d705262adaa85f7dd416088181d6a6bca762b1df502aff3d7a4ee59b7eb31e1",
-      "media": [
-        {
-          "sha256": "6b12469fb377e245e4ea69606225404a1d88b908396741a98fb9bbf361c8c7dd",
-          "kind": "webp",
-          "size": 17380
-        }
-      ]
     },
     {
       "id": "grain.agent-center-layout",
@@ -152,6 +85,73 @@
           "sha256": "0a230b39d84fa2e40a29a8b3c9777ce3b2a20179f34e0445b9949c0d68c33c11",
           "kind": "webp",
           "size": 21280
+        }
+      ]
+    },
+    {
+      "id": "grain.voice-actions",
+      "name": "Voice Actions",
+      "version": "1.0.0",
+      "tier": "scripted",
+      "trust": "core",
+      "capabilities": [
+        "transform:transcript",
+        "open:url",
+        "open:app",
+        "capture:app",
+        "settings"
+      ],
+      "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. Its editor renders as a custom card right below the Snippets settings — no separate window. A worked example of the transform hook, the open:url / open:app / capture:app capabilities, and the custom settings card.",
+      "sha256": "9693b7117fabf0b2474fb733787867a58ba18dc15eb49b6a57ffffd1d4fdf837",
+      "size": 20373,
+      "min_grain_api": "^1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "",
+      "author": "Punit-Dethe",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "8f033d65f9b3d2068fc05d650ab6f7edd5f7a1ac8e9c17619bb2ea9b4f4ccee5",
+      "media": [
+        {
+          "sha256": "fb88b25467ae8958d8153670c4bd8e1621817b7164b4e8dd8a06139eb581c699",
+          "kind": "webp",
+          "size": 18768
+        }
+      ]
+    },
+    {
+      "id": "grain.app-modes",
+      "name": "App Modes",
+      "version": "1.0.0",
+      "tier": "scripted",
+      "trust": "core",
+      "capabilities": [
+        "transform:transcript",
+        "capture:app",
+        "llm",
+        "settings"
+      ],
+      "description": "Your own formatting instructions, applied only inside a specific app or website — an 'X post' mode on x.com, a 'Work email' mode in Outlook. When the focused app matches, the transcript is reformatted with that mode's prompt. Its editor renders as a custom card right below the Context settings. A worked example of the transform hook with capture:app + llm.",
+      "sha256": "7180607d9bd1092f82b4c09169dc1f1466634e0a2b0bca6a30c66b4a11f51830",
+      "size": 20157,
+      "min_grain_api": "^1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "",
+      "author": "Punit-Dethe",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "3d705262adaa85f7dd416088181d6a6bca762b1df502aff3d7a4ee59b7eb31e1",
+      "media": [
+        {
+          "sha256": "6b12469fb377e245e4ea69606225404a1d88b908396741a98fb9bbf361c8c7dd",
+          "kind": "webp",
+          "size": 17380
         }
       ]
     }
