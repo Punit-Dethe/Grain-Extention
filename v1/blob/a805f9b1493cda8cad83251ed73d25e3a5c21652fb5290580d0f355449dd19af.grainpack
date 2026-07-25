@@ -2,10 +2,10 @@
   "manifest": {
     "id": "grain.starter-prompts",
     "name": "Starter Prompts",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "grainApi": "1.0",
     "tier": "pack",
-    "description": "Three post-processing prompts to pick from: General, Coding and Email.",
+    "description": "General, Coding and Email prompts for post-processing.",
     "repository": "https://github.com/Punit-Dethe/Grain-Extention",
     "permissions": []
   },

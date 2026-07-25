@@ -6,7 +6,7 @@
 
 id = "grain.grain-space"
 source_repo = "https://github.com/Punit-Dethe/Grain"
-tag = "v1.0.0"
+tag = "v1.0.1"
 commit = "0000000000000000000000000000000000000000"
 summary = "Speak a note, ask a question, get an answer from your own notes — as plain Markdown, fully local."
 categories = ["tools"]

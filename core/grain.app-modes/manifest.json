@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "grainApi": "^1.0",
   "tier": "scripted",
-  "description": "Format what you dictate differently in each app or site — a post on x.com, an email in Outlook.",
+  "description": "Format what you dictate differently in each app or website.",
   "repository": "https://github.com/Punit-Dethe/Grain-Extention",
   "entry": "main.js",
   "permissions": [

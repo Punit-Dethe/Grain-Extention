@@ -8,13 +8,16 @@
   /* Grain hands its LIVE palette in as `--grain-*` (the panel bridge reads the
      app's own computed tokens), so this card is drawn with the same surfaces,
      ink and accent as every native row around it, in whichever theme Grain is
-     in. It used to carry its own cream-and-gold scheme, which looked like a
-     visiting web page sitting in the settings page. The literals are the
-     fallback for a card opened outside Grain. */
+     in. The literals are the fallback for a card opened outside Grain.
+
+     The card SURFACE is the sunken beige Grain uses for settings wells, and its
+     fields sit on that same surface, told apart by their border. A raised white
+     panel with darker inputs inside inverted the page's own depth: in Grain the
+     recessed well is where controls live, and the card is a well. */
   :root {
     --paper: var(--grain-paper, #ece5da);
     --sunken: var(--grain-paper-sunken, #ddd5c8);
-    --raised: var(--grain-paper-raised, #f2ece1);
+    --raised: var(--grain-paper-sunken, #ddd5c8);
     --line: var(--grain-line, rgba(20, 19, 18, 0.08));
     --ink: var(--grain-ink, #141312);
     --soft: var(--grain-ink-soft, #807c76);
@@ -30,7 +33,7 @@
     :root {
       --paper: var(--grain-paper, #181716);
       --sunken: var(--grain-paper-sunken, #121110);
-      --raised: var(--grain-paper-raised, #211e1b);
+      --raised: var(--grain-paper-sunken, #121110);
       --line: var(--grain-line, rgba(236, 229, 218, 0.08));
       --ink: var(--grain-ink, #ece5da);
       --soft: var(--grain-ink-soft, #9e9587);

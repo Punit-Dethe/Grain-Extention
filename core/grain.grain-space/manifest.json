@@ -1,10 +1,10 @@
 {
   "id": "grain.grain-space",
   "name": "Grain Space",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "grainApi": "^1.0",
   "tier": "builtin",
-  "description": "A local, searchable notebook: save what you dictate and ask questions across all of it.",
+  "description": "A local notebook you dictate into and ask questions across.",
   "repository": "https://github.com/Punit-Dethe/Grain",
   "permissions": [
     "capture:selection",

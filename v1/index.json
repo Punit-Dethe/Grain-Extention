@@ -1,107 +1,8 @@
 {
   "spec": 1,
-  "version": 23,
-  "expires": "2026-08-24T19:23:32Z",
+  "version": 29,
+  "expires": "2026-08-24T19:41:50Z",
   "entries": [
-    {
-      "id": "grain.agent-center-layout",
-      "name": "Agent — Centre layout",
-      "version": "1.0.0",
-      "tier": "pack",
-      "trust": "core",
-      "capabilities": [],
-      "description": "Moves the Agent's reply to a centred panel that grows with the conversation.",
-      "sha256": "8109a66304738d866afdf0ad66126fa5db5ffc483efe78f05b67b85749164467",
-      "size": 450,
-      "min_grain_api": "1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
-      "source_commit": "",
-      "author": "Grain",
-      "reviewed_at": "2026-07-25",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-25",
-      "stars": 0,
-      "installs": 0,
-      "readme": "86ed165fea0f1824c3485b196921a462075b0a3180ee6d85d870d5699cbef9a5",
-      "media": [
-        {
-          "sha256": "712b6944c4003d9b1f0f1219cd9e5efeb65818f5e62336424995f1c6eceeed54",
-          "kind": "webp",
-          "size": 11192
-        }
-      ],
-      "categories": [
-        "visual"
-      ]
-    },
-    {
-      "id": "grain.starter-prompts",
-      "name": "Starter Prompts",
-      "version": "1.0.0",
-      "tier": "pack",
-      "trust": "core",
-      "capabilities": [],
-      "description": "Three post-processing prompts to pick from: General, Coding and Email.",
-      "sha256": "9db4e69254eeb6b55e531cb9e0d6e1a6537f21169964ce6e0e9bb3f65571e2b0",
-      "size": 3982,
-      "min_grain_api": "1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
-      "source_commit": "",
-      "author": "Grain",
-      "reviewed_at": "2026-07-25",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-25",
-      "stars": 0,
-      "installs": 0,
-      "readme": "ec745e1c898f0f4d487534f9244185f8ba883306baebcdcccedb686095e3202c",
-      "media": [
-        {
-          "sha256": "8e11a168a9d740d419bbcd68635d8258cf36fb9bafabbc58965e1f1e1e1fcae1",
-          "kind": "webp",
-          "size": 25480
-        }
-      ],
-      "categories": [
-        "prompts"
-      ]
-    },
-    {
-      "id": "grain.grain-space",
-      "name": "Grain Space",
-      "version": "1.0.0",
-      "tier": "builtin",
-      "trust": "core",
-      "capabilities": [
-        "capture:selection",
-        "storage",
-        "settings",
-        "llm",
-        "embed"
-      ],
-      "description": "A local, searchable notebook: save what you dictate and ask questions across all of it.",
-      "sha256": "79c41c99cc5af4fadce54cbe3463218ea40c3f6d6f06b580f01eb8afb543d81c",
-      "size": 1020,
-      "min_grain_api": "^1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain",
-      "source_commit": "",
-      "author": "Grain",
-      "reviewed_at": "2026-07-25",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-25",
-      "stars": 0,
-      "installs": 0,
-      "readme": "278ee948b9b9cee36f76fcdbd13b553a3b2451826062f5a117084b7437c97a17",
-      "media": [
-        {
-          "sha256": "0a230b39d84fa2e40a29a8b3c9777ce3b2a20179f34e0445b9949c0d68c33c11",
-          "kind": "webp",
-          "size": 21280
-        }
-      ],
-      "categories": [
-        "tools"
-      ]
-    },
     {
       "id": "grain.voice-actions",
       "name": "Voice Actions",
@@ -115,9 +16,9 @@
         "capture:app",
         "settings"
       ],
-      "description": "Say a trigger phrase to open your apps and sites, and Grain strips it from what gets typed.",
-      "sha256": "a8e7c3a9087f0d75ce53a426135e83ae6dab84ebaa1483be6c011003918ae665",
-      "size": 20975,
+      "description": "Say a phrase to open apps and sites, without typing it.",
+      "sha256": "ef72e21d17dc9984bdabfdd1380ccd13acafbbd0866b3525c5bbcca853ae11fb",
+      "size": 21133,
       "min_grain_api": "^1.0",
       "repo": "https://github.com/Punit-Dethe/Grain-Extention",
       "source_commit": "",
@@ -151,9 +52,9 @@
         "llm",
         "settings"
       ],
-      "description": "Format what you dictate differently in each app or site — a post on x.com, an email in Outlook.",
-      "sha256": "7e2feb21d8175cf71d44ca1af6df2e424eaf391a5772533ff5870e347a7c2fbd",
-      "size": 20639,
+      "description": "Format what you dictate differently in each app or website.",
+      "sha256": "aabedb4cb481718b2bdedf8a9c49ec2ea5ee3fbbe49c7d9ff5ad62777f27371b",
+      "size": 20795,
       "min_grain_api": "^1.0",
       "repo": "https://github.com/Punit-Dethe/Grain-Extention",
       "source_commit": "",
@@ -173,6 +74,105 @@
       ],
       "categories": [
         "dictation"
+      ]
+    },
+    {
+      "id": "grain.agent-center-layout",
+      "name": "Agent — Centre layout",
+      "version": "1.0.1",
+      "tier": "pack",
+      "trust": "core",
+      "capabilities": [],
+      "description": "Puts the Agent's reply in a centred panel.",
+      "sha256": "6a24e4e40ab857224b43deeeecebe2e2c3aff5db117632a04c3ceaa763ca71ad",
+      "size": 416,
+      "min_grain_api": "1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "",
+      "author": "Grain",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "86ed165fea0f1824c3485b196921a462075b0a3180ee6d85d870d5699cbef9a5",
+      "media": [
+        {
+          "sha256": "712b6944c4003d9b1f0f1219cd9e5efeb65818f5e62336424995f1c6eceeed54",
+          "kind": "webp",
+          "size": 11192
+        }
+      ],
+      "categories": [
+        "visual"
+      ]
+    },
+    {
+      "id": "grain.starter-prompts",
+      "name": "Starter Prompts",
+      "version": "1.0.1",
+      "tier": "pack",
+      "trust": "core",
+      "capabilities": [],
+      "description": "General, Coding and Email prompts for post-processing.",
+      "sha256": "a805f9b1493cda8cad83251ed73d25e3a5c21652fb5290580d0f355449dd19af",
+      "size": 3966,
+      "min_grain_api": "1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "",
+      "author": "Grain",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "ec745e1c898f0f4d487534f9244185f8ba883306baebcdcccedb686095e3202c",
+      "media": [
+        {
+          "sha256": "8e11a168a9d740d419bbcd68635d8258cf36fb9bafabbc58965e1f1e1e1fcae1",
+          "kind": "webp",
+          "size": 25480
+        }
+      ],
+      "categories": [
+        "prompts"
+      ]
+    },
+    {
+      "id": "grain.grain-space",
+      "name": "Grain Space",
+      "version": "1.0.1",
+      "tier": "builtin",
+      "trust": "core",
+      "capabilities": [
+        "capture:selection",
+        "storage",
+        "settings",
+        "llm",
+        "embed"
+      ],
+      "description": "A local notebook you dictate into and ask questions across.",
+      "sha256": "a4d394e1b1f892d221a1593d818a5a75b5e0f1465f32d0bdaa23fe7f5ebe2762",
+      "size": 992,
+      "min_grain_api": "^1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain",
+      "source_commit": "",
+      "author": "Grain",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "278ee948b9b9cee36f76fcdbd13b553a3b2451826062f5a117084b7437c97a17",
+      "media": [
+        {
+          "sha256": "0a230b39d84fa2e40a29a8b3c9777ce3b2a20179f34e0445b9949c0d68c33c11",
+          "kind": "webp",
+          "size": 21280
+        }
+      ],
+      "categories": [
+        "tools"
       ]
     }
   ]
