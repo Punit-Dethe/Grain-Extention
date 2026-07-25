@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "grainApi": "^1.0",
   "tier": "builtin",
-  "description": "A local scratch space for spoken and captured notes. Speak or select anything and it is saved as plain Markdown with an AI title, summary and reminders; ask a question out loud and Grain answers from your own notes. Works against its own store or an Obsidian vault you already sync. Zero resident memory while its surfaces are closed.",
+  "description": "A local, searchable notebook: save what you dictate and ask questions across all of it.",
   "repository": "https://github.com/Punit-Dethe/Grain",
   "permissions": [
     "capture:selection",

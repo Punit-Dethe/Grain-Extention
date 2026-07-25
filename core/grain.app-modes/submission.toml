@@ -7,6 +7,6 @@ source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
 tag = "v1.0.0"
 commit = "0000000000000000000000000000000000000000"
 summary = "Per-app formatting modes: when the focused app matches, reformat the transcript with your prompt."
-categories = ["productivity"]
+categories = ["dictation"]
 license = "MIT"
 contact = "@Punit-Dethe"

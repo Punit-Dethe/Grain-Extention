@@ -5,10 +5,12 @@
     "version": "1.0.0",
     "grainApi": "1.0",
     "tier": "pack",
-    "description": "An alternative centred look for the Agent's reply panel. A pure-data surface variant (SPEC §10.2): enabling it adds a 'Centre' option to the Agent position setting; selecting it moves the reply panel to the centre.",
+    "description": "Moves the Agent's reply to a centred panel that grows with the conversation.",
     "repository": "https://github.com/Punit-Dethe/Grain-Extention",
     "permissions": [],
-    "variant_slots": ["agent.reply-surface"]
+    "variant_slots": [
+      "agent.reply-surface"
+    ]
   },
   "payloads": {}
 }

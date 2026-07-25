@@ -1,0 +1,16 @@
+{
+  "manifest": {
+    "id": "grain.agent-center-layout",
+    "name": "Agent — Centre layout",
+    "version": "1.0.0",
+    "grainApi": "1.0",
+    "tier": "pack",
+    "description": "Moves the Agent's reply to a centred panel that grows with the conversation.",
+    "repository": "https://github.com/Punit-Dethe/Grain-Extention",
+    "permissions": [],
+    "variant_slots": [
+      "agent.reply-surface"
+    ]
+  },
+  "payloads": {}
+}

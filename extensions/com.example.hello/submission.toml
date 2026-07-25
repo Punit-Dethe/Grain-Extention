@@ -14,7 +14,7 @@ commit = "0000000000000000000000000000000000000000"
 summary = "A friendly hello-world transcript transform."
 
 # At least one category.
-categories = ["utilities"]
+categories = ["tools"]
 
 # SPDX licence identifier. A licence is required (CI fails without one).
 license = "MIT"

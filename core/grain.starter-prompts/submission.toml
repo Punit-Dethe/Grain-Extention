@@ -8,6 +8,6 @@ source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
 tag = "v1.0.0"
 commit = "0000000000000000000000000000000000000000"
 summary = "General, Coding and Email prompts for post-processing."
-categories = ["dictation"]
+categories = ["prompts"]
 license = "MIT"
 contact = "@Punit-Dethe"

@@ -1,0 +1,44 @@
+{
+  "manifest": {
+    "contributes": {
+      "settings": [
+        {
+          "key": "grain-space",
+          "kind": "panel",
+          "label": "",
+          "order": 10,
+          "searchTerms": [
+            "notes",
+            "grain space",
+            "note",
+            "vault",
+            "obsidian",
+            "recall",
+            "memory",
+            "second brain",
+            "reminders",
+            "quick add",
+            "semantic search",
+            "embeddings"
+          ],
+          "uiSource": "grain://grain-space/settings"
+        }
+      ]
+    },
+    "description": "A local, searchable notebook: save what you dictate and ask questions across all of it.",
+    "grainApi": "^1.0",
+    "id": "grain.grain-space",
+    "name": "Grain Space",
+    "permissions": [
+      "capture:selection",
+      "storage",
+      "settings",
+      "llm",
+      "embed"
+    ],
+    "repository": "https://github.com/Punit-Dethe/Grain",
+    "tier": "builtin",
+    "version": "1.0.0"
+  },
+  "payloads": {}
+}

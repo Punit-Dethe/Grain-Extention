@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "grainApi": "1.0",
     "tier": "pack",
-    "description": "Three post-processing prompts to pick from — General, Coding and Email — grouped under this extension in the prompt list. Pure data: no code runs, nothing is stored, and turning it off takes its prompts with it.",
+    "description": "Three post-processing prompts to pick from: General, Coding and Email.",
     "repository": "https://github.com/Punit-Dethe/Grain-Extention",
     "permissions": []
   },

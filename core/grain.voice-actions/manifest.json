@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "grainApi": "^1.0",
   "tier": "scripted",
-  "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. Its editor renders as a custom card right below the Snippets settings — no separate window. A worked example of the transform hook, the open:url / open:app / capture:app capabilities, and the custom settings card.",
+  "description": "Say a trigger phrase to open your apps and sites, and Grain strips it from what gets typed.",
   "repository": "https://github.com/Punit-Dethe/Grain-Extention",
   "entry": "main.js",
   "permissions": [
@@ -14,7 +14,9 @@
     "capture:app",
     "settings"
   ],
-  "activation": ["onTransform"],
+  "activation": [
+    "onTransform"
+  ],
   "contributes": {
     "settings": [
       {
