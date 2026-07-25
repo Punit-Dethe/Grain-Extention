@@ -1,0 +1,13 @@
+# Starter Prompts — a first-party prompt pack (SPEC §10.2 tier A), built from
+# the Grain repo by our own CI, so it is `core` by construction. It is the
+# canonical example of a pure-data prompt contribution: no entry script, no
+# permissions, no storage — the manifest IS the extension.
+
+id = "grain.starter-prompts"
+source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
+tag = "v1.0.0"
+commit = "0000000000000000000000000000000000000000"
+summary = "General, Coding and Email prompts for post-processing."
+categories = ["dictation"]
+license = "MIT"
+contact = "@Punit-Dethe"

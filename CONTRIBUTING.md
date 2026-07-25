@@ -50,6 +50,29 @@ and an image can never be swapped under a published version. Keep a cover near
 > anyone else. Everything on this page applies to `pack`, `scripted` and
 > `native`.
 
+## Sharing prompts
+
+The smallest useful extension has no code in it at all. A `pack` that carries
+`payloads.prompts` adds its prompts to the user's post-processing list, grouped
+under your extension's name so they stay distinguishable from the user's own:
+
+```json
+{
+  "manifest": { "id": "com.you.prompts", "tier": "pack", "permissions": [] },
+  "payloads": {
+    "prompts": [
+      { "id": "email", "name": "Email", "prompt": "…${output}…" }
+    ]
+  }
+}
+```
+
+Entries land under `ext:<your-id>:<prompt-id>`, so they can never collide with a
+user's prompt or another pack's, and turning your extension off removes exactly
+yours. They are read-only in Settings — a user who wants to change one copies it
+into a prompt of their own, which then survives your updates. `grain.starter-
+prompts` in `core/` is a complete worked example.
+
 ## Required
 
 - A **public** source repository.

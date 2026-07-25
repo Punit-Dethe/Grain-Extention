@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 12,
-  "expires": "2026-08-24T10:34:31Z",
+  "version": 13,
+  "expires": "2026-08-24T11:38:15Z",
   "entries": [
     {
       "id": "com.example.hello",
@@ -152,6 +152,34 @@
           "sha256": "6b12469fb377e245e4ea69606225404a1d88b908396741a98fb9bbf361c8c7dd",
           "kind": "webp",
           "size": 17380
+        }
+      ]
+    },
+    {
+      "id": "grain.starter-prompts",
+      "name": "Starter Prompts",
+      "version": "1.0.0",
+      "tier": "pack",
+      "trust": "core",
+      "capabilities": [],
+      "description": "Three post-processing prompts to pick from — General, Coding and Email — grouped under this extension in the prompt list. Pure data: no code runs, nothing is stored, and turning it off takes its prompts with it.",
+      "sha256": "567ccc5899d196be334842c9b472fa4d00c6753a9ff7b5f889975dbfd70c340d",
+      "size": 4096,
+      "min_grain_api": "1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "",
+      "author": "Grain",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "ec745e1c898f0f4d487534f9244185f8ba883306baebcdcccedb686095e3202c",
+      "media": [
+        {
+          "sha256": "8e11a168a9d740d419bbcd68635d8258cf36fb9bafabbc58965e1f1e1e1fcae1",
+          "kind": "webp",
+          "size": 25480
         }
       ]
     }
