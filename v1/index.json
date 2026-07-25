@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 5,
-  "expires": "2026-08-23T11:52:10Z",
+  "version": 9,
+  "expires": "2026-08-24T00:10:18Z",
   "entries": [
     {
       "id": "com.example.hello",
@@ -12,6 +12,7 @@
       "capabilities": [
         "transform:transcript"
       ],
+      "description": "",
       "sha256": "10046c61be5d612027adf58abdae14e8e5511f7b69826e4b913f03163880bc66",
       "size": 549,
       "min_grain_api": "1.0",
@@ -21,25 +22,9 @@
       "reviewed_at": "2026-07-23",
       "reviewed_commit": "",
       "updated_at": "2026-07-23",
-      "stars": 0
-    },
-    {
-      "id": "grain.agent-center-layout",
-      "name": "Agent — Centre layout",
-      "version": "1.0.0",
-      "tier": "pack",
-      "trust": "core",
-      "capabilities": [],
-      "sha256": "919bd59ebbeace1d94d10e69dccf354290ae54fb33ff52163c83868612456459",
-      "size": 575,
-      "min_grain_api": "1.0",
-      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
-      "source_commit": "genesis",
-      "author": "Punit-Dethe",
-      "reviewed_at": "2026-07-24",
-      "reviewed_commit": "",
-      "updated_at": "2026-07-24",
-      "stars": 0
+      "stars": 0,
+      "installs": 0,
+      "readme": ""
     },
     {
       "id": "grain.voice-actions",
@@ -51,18 +36,90 @@
         "transform:transcript",
         "open:url",
         "open:app",
+        "capture:app",
         "settings"
       ],
-      "sha256": "2fc55bd25f2d53eb702eb6d3f083ed00056fdbf36b16a6a5c0beebb49fecdf35",
-      "size": 3826,
+      "description": "Say a trigger word to open apps and websites, then have it stripped from what gets pasted. Its editor renders as a custom card right below the Snippets settings — no separate window. A worked example of the transform hook, the open:url / open:app / capture:app capabilities, and the custom settings card.",
+      "sha256": "d8d65119d5fd58606da14995a416717d223af5f4157adeda50e2bd1d2be30880",
+      "size": 19581,
       "min_grain_api": "^1.0",
       "repo": "https://github.com/Punit-Dethe/Grain-Extention",
       "source_commit": "genesis",
       "author": "Punit-Dethe",
-      "reviewed_at": "2026-07-24",
+      "reviewed_at": "2026-07-25",
       "reviewed_commit": "",
-      "updated_at": "2026-07-24",
-      "stars": 0
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "8f033d65f9b3d2068fc05d650ab6f7edd5f7a1ac8e9c17619bb2ea9b4f4ccee5",
+      "media": [
+        {
+          "sha256": "fb88b25467ae8958d8153670c4bd8e1621817b7164b4e8dd8a06139eb581c699",
+          "kind": "webp",
+          "size": 18768
+        }
+      ]
+    },
+    {
+      "id": "grain.app-modes",
+      "name": "App Modes",
+      "version": "1.0.0",
+      "tier": "scripted",
+      "trust": "core",
+      "capabilities": [
+        "transform:transcript",
+        "capture:app",
+        "llm",
+        "settings"
+      ],
+      "description": "Your own formatting instructions, applied only inside a specific app or website — an 'X post' mode on x.com, a 'Work email' mode in Outlook. When the focused app matches, the transcript is reformatted with that mode's prompt. Its editor renders as a custom card right below the Context settings. A worked example of the transform hook with capture:app + llm.",
+      "sha256": "707db9f22225185552cb7b7cece8c167c03b45ee214e63a2ff74fbb45a9931e8",
+      "size": 19365,
+      "min_grain_api": "^1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "genesis",
+      "author": "Punit-Dethe",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "3d705262adaa85f7dd416088181d6a6bca762b1df502aff3d7a4ee59b7eb31e1",
+      "media": [
+        {
+          "sha256": "6b12469fb377e245e4ea69606225404a1d88b908396741a98fb9bbf361c8c7dd",
+          "kind": "webp",
+          "size": 17380
+        }
+      ]
+    },
+    {
+      "id": "grain.agent-center-layout",
+      "name": "Agent — Centre layout",
+      "version": "1.0.0",
+      "tier": "pack",
+      "trust": "core",
+      "capabilities": [],
+      "description": "An alternative centred look for the Agent's reply panel. A pure-data surface variant (SPEC §10.2): enabling it adds a 'Centre' option to the Agent position setting; selecting it moves the reply panel to the centre.",
+      "sha256": "919bd59ebbeace1d94d10e69dccf354290ae54fb33ff52163c83868612456459",
+      "size": 575,
+      "min_grain_api": "1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain-Extention",
+      "source_commit": "genesis",
+      "author": "Punit-Dethe",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "86ed165fea0f1824c3485b196921a462075b0a3180ee6d85d870d5699cbef9a5",
+      "media": [
+        {
+          "sha256": "712b6944c4003d9b1f0f1219cd9e5efeb65818f5e62336424995f1c6eceeed54",
+          "kind": "webp",
+          "size": 11192
+        }
+      ]
     }
   ]
 }

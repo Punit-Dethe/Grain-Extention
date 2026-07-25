@@ -17,9 +17,30 @@ grain-ext submit                # opens the PR against grain-extensions
 ```
 extensions/<id>/
   submission.toml    id, source repo, pinned tag + commit, categories, licence, contact
-  README.md          store copy
-  screenshots/       optional
+  README.md          your store page — rendered in full on the detail view
+  media/
+    cover.webp       the card image (16:9). WEBP or GIF. Shown first, everywhere.
+    *.webp | *.gif   further screenshots, in filename order
 ```
+
+## Your store listing (just drop the files in)
+
+There is **no extra metadata file** to write. The listing is assembled from
+files you already keep:
+
+| What the store shows | Where it comes from |
+|---|---|
+| Name, version, capabilities | `manifest.json` |
+| One-line description on the card | `description` in `manifest.json` |
+| Cover image (top of the card) | `media/cover.webp` (or `.gif`) |
+| Screenshots on the detail page | the rest of `media/` |
+| The full detail page body | `README.md` |
+| Install count | measured by us; you never supply it |
+
+Images must be **WEBP or GIF** (no video, no PNG/JPEG) — they are
+content-addressed and served as small immutable blobs, so the store stays fast
+and an image can never be swapped under a published version. Keep a cover near
+16:9 and under ~200 KB.
 
 ## Required
 
