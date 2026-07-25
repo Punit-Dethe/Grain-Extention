@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 9,
-  "expires": "2026-08-24T00:10:18Z",
+  "version": 10,
+  "expires": "2026-08-24T00:48:21Z",
   "entries": [
     {
       "id": "com.example.hello",
@@ -118,6 +118,40 @@
           "sha256": "712b6944c4003d9b1f0f1219cd9e5efeb65818f5e62336424995f1c6eceeed54",
           "kind": "webp",
           "size": 11192
+        }
+      ]
+    },
+    {
+      "id": "grain.grain-space",
+      "name": "Grain Space",
+      "version": "1.0.0",
+      "tier": "builtin",
+      "trust": "core",
+      "capabilities": [
+        "capture:selection",
+        "storage",
+        "settings",
+        "llm",
+        "embed"
+      ],
+      "description": "A local scratch space for spoken and captured notes. Speak or select anything and it is saved as plain Markdown with an AI title, summary and reminders; ask a question out loud and Grain answers from your own notes. Works against its own store or an Obsidian vault you already sync. Zero resident memory while its surfaces are closed.",
+      "sha256": "8264921e191c1ed9bb4b2fc22c917b63fcd961ba839b1ce10f8cc63f811d718f",
+      "size": 1267,
+      "min_grain_api": "^1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain",
+      "source_commit": "",
+      "author": "Punit-Dethe",
+      "reviewed_at": "2026-07-25",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-25",
+      "stars": 0,
+      "installs": 0,
+      "readme": "278ee948b9b9cee36f76fcdbd13b553a3b2451826062f5a117084b7437c97a17",
+      "media": [
+        {
+          "sha256": "0a230b39d84fa2e40a29a8b3c9777ce3b2a20179f34e0445b9949c0d68c33c11",
+          "kind": "webp",
+          "size": 21280
         }
       ]
     }

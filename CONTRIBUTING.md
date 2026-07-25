@@ -42,6 +42,14 @@ content-addressed and served as small immutable blobs, so the store stays fast
 and an image can never be swapped under a published version. Keep a cover near
 16:9 and under ~200 KB.
 
+> **Not for submissions: the `builtin` tier.** A few first-party extensions
+> (Grain Space) are listed and installed exactly like yours, but their
+> implementation is compiled into Grain because they own things a sandboxed
+> worker cannot — a local embedding engine, a vector index, a native window.
+> The tier is restricted to reserved `grain.` ids and rejected at import for
+> anyone else. Everything on this page applies to `pack`, `scripted` and
+> `native`.
+
 ## Required
 
 - A **public** source repository.
