@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 30,
-  "expires": "2026-08-24T19:41:50Z",
+  "version": 31,
+  "expires": "2026-08-25T06:43:17Z",
   "entries": [
     {
       "id": "grain.voice-actions",
@@ -136,6 +136,40 @@
       ],
       "categories": [
         "prompts"
+      ]
+    },
+    {
+      "id": "grain.note-ui",
+      "name": "Note Window",
+      "version": "0.1.0",
+      "tier": "scripted",
+      "trust": "core",
+      "capabilities": [
+        "notes",
+        "surface:workspace"
+      ],
+      "description": "A window for reading and editing your Grain Space notes.",
+      "sha256": "c374018201e8bf5bbc7e1a4da2d9ef28a41c7939b589d4dc81f6db091491e9a8",
+      "size": 4905,
+      "min_grain_api": "^1.0",
+      "repo": "https://github.com/Punit-Dethe/Grain",
+      "source_commit": "",
+      "author": "Grain",
+      "reviewed_at": "2026-07-26",
+      "reviewed_commit": "",
+      "updated_at": "2026-07-26",
+      "stars": 0,
+      "installs": 0,
+      "readme": "404e3ab70d74b5fcbd145e2cc4615028a0248d90011feafd3237abad2915b267",
+      "media": [
+        {
+          "sha256": "fb88b25467ae8958d8153670c4bd8e1621817b7164b4e8dd8a06139eb581c699",
+          "kind": "webp",
+          "size": 18768
+        }
+      ],
+      "categories": [
+        "tools"
       ]
     }
   ]

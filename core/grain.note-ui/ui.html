@@ -1,0 +1,95 @@
+<!--
+  Note Window — P2 skeleton (NOTE-UI-EXTENSION-PLAN.md).
+
+  Deliberately small. Its job is to prove the whole path end to end — install,
+  grant, shortcut, window, data — with fifty lines rather than five thousand, so
+  that when the real UI moves in at P4 the only new thing is the UI itself.
+
+  It also measures the round trip, because that is the open question the plan
+  names: a note editor must not turn keystrokes into host calls, and the number
+  on screen is what tells us how much headroom there is.
+-->
+<style>
+  :root {
+    /* Grain injects its live palette; the literals are the standalone fallback. */
+    --paper: var(--grain-paper, #ece5da);
+    --raised: var(--grain-paper-raised, #f2ece1);
+    --sunken: var(--grain-paper-sunken, #ddd5c8);
+    --line: var(--grain-line, rgba(20, 19, 18, 0.08));
+    --ink: var(--grain-ink, #141312);
+    --soft: var(--grain-ink-soft, #807c76);
+    --faint: var(--grain-ink-faint, #a09b94);
+    --accent: var(--grain-accent, #ff5d1e);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 14px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  h1 { margin: 0 0 4px; font-size: 1.15rem; letter-spacing: -0.01em; }
+  .meta { color: var(--faint); font-size: 12px; margin-bottom: 18px; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--raised);
+    margin-bottom: 6px;
+  }
+  .title { font-weight: 500; }
+  .tldr { color: var(--soft); font-size: 12px; margin-top: 2px; }
+  .empty, .error { color: var(--soft); }
+  .error { color: #b4462f; }
+</style>
+
+<h1>Notes</h1>
+<div class="meta" id="meta">Loading…</div>
+<ul id="list"></ul>
+
+<script>
+  (function () {
+    var listEl = document.getElementById("list");
+    var metaEl = document.getElementById("meta");
+
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+
+    var started = performance.now();
+    grain.notes
+      .cards()
+      .then(function (cards) {
+        // The measurement the plan asks for: one host call, wall-clock, on the
+        // real channel rather than a guess about it.
+        var ms = Math.round(performance.now() - started);
+        cards = Array.isArray(cards) ? cards : [];
+        metaEl.textContent =
+          cards.length + (cards.length === 1 ? " note" : " notes") +
+          " · loaded in " + ms + "ms";
+        if (!cards.length) {
+          listEl.innerHTML =
+            '<li class="empty">Nothing saved yet. Capture a note in Grain and it appears here.</li>';
+          return;
+        }
+        listEl.innerHTML = cards
+          .map(function (c) {
+            return (
+              '<li><div class="title">' + esc(c.title || "Untitled") + "</div>" +
+              (c.tldr ? '<div class="tldr">' + esc(c.tldr) + "</div>" : "") +
+              "</li>"
+            );
+          })
+          .join("");
+      })
+      .catch(function (e) {
+        metaEl.textContent = "";
+        listEl.innerHTML =
+          '<li class="error">' + esc((e && e.message) || e) + "</li>";
+      });
+  })();
+</script>
