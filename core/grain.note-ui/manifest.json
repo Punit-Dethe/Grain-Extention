@@ -1,18 +1,26 @@
 {
   "id": "grain.note-ui",
   "name": "Note Window",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "grainApi": "^1.0",
   "tier": "scripted",
   "description": "A window for reading and editing your Grain Space notes.",
   "repository": "https://github.com/Punit-Dethe/Grain",
-  "permissions": ["notes", "surface:workspace"],
-  "activation": ["onShortcut:open"],
+  "permissions": [
+    "notes",
+    "surface:workspace"
+  ],
+  "activation": [
+    "onShortcut:open"
+  ],
   "entry": "main.js",
   "surfaces": {
     "workspace": {
       "title": "Notes",
-      "minSize": [900, 600],
+      "minSize": [
+        900,
+        600
+      ],
       "uiSource": "ui.html"
     }
   },
