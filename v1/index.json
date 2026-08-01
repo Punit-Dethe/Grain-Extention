@@ -1,7 +1,7 @@
 {
   "spec": 1,
-  "version": 34,
-  "expires": "2026-08-31T11:57:17Z",
+  "version": 38,
+  "expires": "2026-08-31T12:47:03Z",
   "entries": [
     {
       "id": "grain.voice-actions",
@@ -25,7 +25,7 @@
       "author": "Grain",
       "reviewed_at": "2026-07-25",
       "reviewed_commit": "",
-      "updated_at": "2026-07-25",
+      "updated_at": "2026-08-01",
       "stars": 0,
       "installs": 0,
       "readme": "8f033d65f9b3d2068fc05d650ab6f7edd5f7a1ac8e9c17619bb2ea9b4f4ccee5",
@@ -38,6 +38,9 @@
       ],
       "categories": [
         "dictation"
+      ],
+      "extends": [
+        "snippets.after"
       ]
     },
     {
@@ -61,7 +64,7 @@
       "author": "Grain",
       "reviewed_at": "2026-07-25",
       "reviewed_commit": "",
-      "updated_at": "2026-07-25",
+      "updated_at": "2026-08-01",
       "stars": 0,
       "installs": 0,
       "readme": "3d705262adaa85f7dd416088181d6a6bca762b1df502aff3d7a4ee59b7eb31e1",
@@ -74,6 +77,9 @@
       ],
       "categories": [
         "dictation"
+      ],
+      "extends": [
+        "context.after"
       ]
     },
     {
@@ -92,7 +98,7 @@
       "author": "Grain",
       "reviewed_at": "2026-07-25",
       "reviewed_commit": "",
-      "updated_at": "2026-07-25",
+      "updated_at": "2026-08-01",
       "stars": 0,
       "installs": 0,
       "readme": "86ed165fea0f1824c3485b196921a462075b0a3180ee6d85d870d5699cbef9a5",
@@ -105,6 +111,9 @@
       ],
       "categories": [
         "visual"
+      ],
+      "extends": [
+        "agent.reply-surface"
       ]
     },
     {
@@ -123,7 +132,7 @@
       "author": "Grain",
       "reviewed_at": "2026-07-25",
       "reviewed_commit": "",
-      "updated_at": "2026-07-25",
+      "updated_at": "2026-08-01",
       "stars": 0,
       "installs": 0,
       "readme": "ec745e1c898f0f4d487534f9244185f8ba883306baebcdcccedb686095e3202c",
@@ -136,6 +145,9 @@
       ],
       "categories": [
         "prompts"
+      ],
+      "extends": [
+        "dictation.prompts"
       ]
     }
   ]
