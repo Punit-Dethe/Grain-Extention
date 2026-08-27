@@ -5,7 +5,7 @@ extensions. This repository is the **source of truth** for what may be published
 what the Grain app actually reads is a set of **signed static files** published as
 GitHub Releases (`v1/index.json`, `v1/roots.json`, `v1/revocations.json`, and
 content-addressed `v1/blob/<sha256>.grainpack`) — never the git tree, and never a
-website.
+website. kept open source while development 
 
 - **How to submit:** [CONTRIBUTING.md](CONTRIBUTING.md)
 - **How submissions are reviewed:** [REVIEW-POLICY.md](REVIEW-POLICY.md)
