@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "id": "com.example.source-mcp",
+  "name": "Tools",
+  "description": "Tools provided by Tools",
+  "version": "0.1.0",
+  "grainApi": "^1.0",
+  "transport": {
+    "type": "streamable-http",
+    "url": "https://tools.example.com/mcp"
+  },
+  "authentication": {
+    "type": "oauth"
+  }
+}
