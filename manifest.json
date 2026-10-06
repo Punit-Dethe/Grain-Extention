@@ -1,0 +1,32 @@
+{
+  "id": "com.example.source-native",
+  "name": "Tools",
+  "version": "0.1.0",
+  "grainApi": "^1.0",
+  "tier": "scripted",
+  "kind": "extending",
+  "description": "A Grain extension by Tools",
+  "icon": "icon.png",
+  "repository": null,
+  "permissions": [],
+  "activation": [],
+  "surfaces": {},
+  "slots": [],
+  "variant_slots": [],
+  "contributes": {
+    "settings": [],
+    "shortcuts": [],
+    "actions": [
+      {
+        "id": "hello",
+        "title": "Say hello",
+        "risk": "safe",
+        "when": {},
+        "utterances": [
+          "say hello"
+        ]
+      }
+    ]
+  },
+  "entry": "dist/main.js"
+}

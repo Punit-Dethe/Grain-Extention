@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "esbuild": "0.25.0",
+    "typescript": "5.8.2"
+  },
+  "name": "tools",
+  "private": true,
+  "scripts": {
+    "build": "tsc --noEmit && esbuild src/main.ts --bundle --format=iife --platform=browser --target=es2020 --outfile=dist/main.js --sourcemap",
+    "check": "tsc --noEmit"
+  },
+  "version": "0.1.0"
+}
