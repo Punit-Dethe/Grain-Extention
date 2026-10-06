@@ -1,4 +1,4 @@
-# Local filesystem acceptance only. No publishing, keys, author builds or OIDC.
+# Local filesystem/Git acceptance only. No GitHub writes, keys, author builds or OIDC.
 name: serving-tree-checkpoint
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: ac965830befecbb27a85e4a4d8051ef8730e4889
+          ref: 7557c0d722e8ab1a23afe62c2710c65b3b5a298e
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -26,7 +26,7 @@ jobs:
           mkdir "$RUNNER_TEMP/serving-evidence"
           echo "CARGO_TARGET_DIR=$RUNNER_TEMP/grain-target" >> "$GITHUB_ENV"
           rustup toolchain install 1.96.0 --profile minimal --no-self-update
-      - name: Maintainer regressions, real signed renewal and Unix symlink tests
+      - name: Maintainer regressions, signed publication, bare Git races and Unix guards
         working-directory: grain
         env:
           CARGO_PROFILE_DEV_DEBUG: 0
@@ -66,6 +66,18 @@ jobs:
               else: assert child.returncode == 0, (label, output)
               results.append({'label': label, 'pid': child.pid, 'exit': child.returncode, 'expected': error or 'success'})
           run('seed-real-root-chain', ['verify-serving-tree', '--v1', seed])
+          publication_args = ['prepare-github-publication', '--checkout', root / 'never-open-checkout', '--repository', 'example/registry', '--branch', 'release', '--expected-base-commit', '1' * 40, '--candidate-commit', '2' * 40, '--previous', root / 'never-open-previous', '--previous-receipt-sha256', '1' * 64, '--bundle', root / 'never-open-bundle', '--expected-receipt-sha256', '2' * 64, '--out', root / 'refused-publication']
+          for label, flag, value, error in [
+              ('publication-repository-refused', '--repository', 'https://elsewhere.invalid/repo', 'OWNER/REPO'),
+              ('publication-candidate-refused', '--candidate-commit', 'bad', 'full Git SHA1'),
+              ('publication-unchanged-commit-refused', '--candidate-commit', '1' * 40, 'distinct full Git SHA1'),
+              ('publication-branch-refused', '--branch', 'release:other', 'branch is malformed'),
+          ]:
+              attempt = publication_args.copy(); attempt[attempt.index(flag) + 1] = value
+              run(label, attempt, error)
+              assert not (root / 'refused-publication').exists(), label
+          for name in ['never-open-checkout', 'never-open-previous', 'never-open-bundle']:
+              assert not (root / name).exists()
           assembly = root / 'assembly'
           run('complete-seed-assembly', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', assembly])
           run('complete-assembly-verify', ['verify-serving-tree', '--v1', assembly / 'v1'])
@@ -178,7 +190,7 @@ jobs:
           finally: (store / 'current.json').write_bytes(before)
           assert (store / 'current.json').read_bytes() == before
           assert len(list((store / 'snapshots').iterdir())) == 1
-          assert len(results) == 46
+          assert len(results) == 50
           report = {'grain_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True, timeout=30).strip(), 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
           (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
