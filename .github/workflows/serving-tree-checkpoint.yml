@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 0abc271736ec8ff959b1d5e39dfeb31e9f98347d
+          ref: 7eed2f1f6a6f1048fc4b3e11bc66e2714ac6fe84
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -83,6 +83,7 @@ jobs:
               try:
                   run('actual-cross-process-lock', args, 'store lock')
                   run('export-cross-process-lock', ['export-serving-snapshot', '--store', store, '--out', root / 'lock-export', '--expected-current-sha256', pin], 'store lock')
+                  run('hosting-cross-process-lock', ['export-hosting-bundle', '--store', store, '--out', root / 'lock-hosting', '--expected-current-sha256', pin], 'store lock')
               finally: fcntl.flock(held, fcntl.LOCK_UN)
           run('lock-release-recovery', args, 'No metadata change')
           export = root / 'export'
@@ -108,6 +109,37 @@ jobs:
               run('export-corrupt-selection', export_args, 'signature does not verify')
           finally: selected.write_bytes(selected_bytes)
           assert not refuse.exists() and not (root / 'lock-export').exists()
+          hosting = root / 'hosting'
+          hosting_args = ['export-hosting-bundle', '--store', store, '--out', hosting, '--expected-current-sha256', pin]
+          run('export-hosting-bundle', hosting_args)
+          bundle_pin = digest((hosting / 'bundle.json').read_bytes())
+          verify_args = ['verify-hosting-bundle', '--bundle', hosting, '--expected-receipt-sha256', bundle_pin]
+          run('verify-hosting-bundle', verify_args)
+          run('hosting-wrong-receipt', verify_args[:-1] + ['a' * 64], 'receipt digest differs')
+          run('hosting-invalid-receipt', verify_args[:-1] + ['bad'], 'Independent hosting receipt digest')
+          run('hosting-no-overwrite', hosting_args, 'already exists')
+          failed = root / 'failed-hosting'; hosting_args[4] = failed
+          run('hosting-stale-current', hosting_args[:-1] + ['a' * 64], 'pointer changed')
+          inside = hosting_args.copy(); inside[4] = store / 'inside-hosting'
+          run('hosting-no-input-mutation', inside, 'outside')
+          for file, message, label in [(hosting / 'v1/index.json', 'signature does not verify', 'metadata'), (hosting / 'current.json', 'current pointer differs', 'pointer'), (hosting / 'bundle.json', 'receipt digest differs', 'receipt')]:
+              original = file.read_bytes()
+              try:
+                  file.write_bytes(original + b' ')
+                  run('hosting-tampered-' + label, verify_args, message)
+              finally: file.write_bytes(original)
+          extra_history = hosting / 'history' / ('0' * 64)
+          try:
+              extra_history.mkdir()
+              run('hosting-extra-history', verify_args, 'Unexpected')
+          finally: extra_history.rmdir()
+          for file, label in [(hosting / 'v1/media/extra.md', 'asset'), (hosting / 'extra.txt', 'root')]:
+              try:
+                  file.write_text('extra nonsecret input')
+                  run('hosting-extra-' + label, verify_args, 'Unexpected')
+              finally: file.unlink()
+          assert not failed.exists() and not (root / 'lock-hosting').exists()
+          assert (hosting / 'current.json').read_bytes() == before
           for document in ['roots.json', 'index.json', 'revocations.json']:
               file = seed / document; original = file.read_bytes()
               try:
@@ -127,8 +159,8 @@ jobs:
           finally: (store / 'current.json').write_bytes(before)
           assert (store / 'current.json').read_bytes() == before
           assert len(list((store / 'snapshots').iterdir())) == 1
-          assert len(results) == 25
-          report = {'grain_commit': '0abc271736ec8ff959b1d5e39dfeb31e9f98347d', 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
+          assert len(results) == 39
+          report = {'grain_commit': '7eed2f1f6a6f1048fc4b3e11bc66e2714ac6fe84', 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
           (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
           PY
