@@ -102,7 +102,7 @@ jobs:
 
   prepare:
     needs: [request, author-build]
-    if: always() && needs.request.result == 'success' && (needs.author-build.result == 'success' || needs.author-build.result == 'skipped')
+    if: always() && !cancelled() && needs.request.result == 'success' && (needs.author-build.result == 'success' || needs.author-build.result == 'skipped')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
@@ -146,6 +146,9 @@ jobs:
 
   attest:
     needs: prepare
+    # MCP legitimately skips author-build; override transitive skip propagation,
+    # while still refusing failed preparation and cancelling superseded work.
+    if: always() && !cancelled() && needs.prepare.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
