@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: af28a2434506181336d00978be9fa7d2397e08a8
+          ref: 0abc271736ec8ff959b1d5e39dfeb31e9f98347d
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -80,9 +80,34 @@ jobs:
           run('no-repeat-promotion', args, 'No metadata change')
           with open(store / 'promotion.lock', 'r+b', buffering=0) as held:
               fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
-              try: run('actual-cross-process-lock', args, 'store lock')
+              try:
+                  run('actual-cross-process-lock', args, 'store lock')
+                  run('export-cross-process-lock', ['export-serving-snapshot', '--store', store, '--out', root / 'lock-export', '--expected-current-sha256', pin], 'store lock')
               finally: fcntl.flock(held, fcntl.LOCK_UN)
           run('lock-release-recovery', args, 'No metadata change')
+          export = root / 'export'
+          export_args = ['export-serving-snapshot', '--store', store, '--out', export, '--expected-current-sha256', pin]
+          run('export-selected-real-snapshot', export_args)
+          run('verify-exported-real-snapshot', ['verify-serving-tree', '--v1', export / 'v1'])
+          receipt = json.loads((export / 'snapshot.json').read_bytes())
+          assert receipt['current_sha256'] == pin and receipt['selected'] == json.loads(before)
+          for name in ['roots', 'index', 'revocations']:
+              for suffix in ['.json', '.json.minisig']:
+                  assert (export / 'v1' / (name + suffix)).read_bytes() == (seed / (name + suffix)).read_bytes()
+          run('export-no-overwrite', export_args, 'already exists')
+          refuse = root / 'refused-export'
+          export_args[4] = refuse
+          run('export-stale-pointer', export_args[:-1] + ['a' * 64], 'pointer changed')
+          run('export-invalid-digest', export_args[:-1] + ['bad'], 'Independent current-pointer digest')
+          inside = export_args.copy(); inside[4] = store / 'inside-export'
+          run('export-no-input-mutation', inside, 'outside')
+          selected = store / 'snapshots' / json.loads(before)['snapshot'] / 'index.json'
+          selected_bytes = selected.read_bytes()
+          try:
+              selected.write_bytes(selected_bytes + b' ')
+              run('export-corrupt-selection', export_args, 'signature does not verify')
+          finally: selected.write_bytes(selected_bytes)
+          assert not refuse.exists() and not (root / 'lock-export').exists()
           for document in ['roots.json', 'index.json', 'revocations.json']:
               file = seed / document; original = file.read_bytes()
               try:
@@ -98,11 +123,12 @@ jobs:
               bad = json.loads(before); bad['snapshot'] = '../escape'
               (store / 'current.json').write_bytes(json.dumps(bad).encode())
               run('pointer-traversal-refused', args[:-1] + [digest((store / 'current.json').read_bytes())], 'Malformed serving pointer')
+              run('export-pointer-traversal-refused', export_args[:-1] + [digest((store / 'current.json').read_bytes())], 'Malformed serving pointer')
           finally: (store / 'current.json').write_bytes(before)
           assert (store / 'current.json').read_bytes() == before
           assert len(list((store / 'snapshots').iterdir())) == 1
-          assert len(results) == 16
-          report = {'grain_commit': 'af28a2434506181336d00978be9fa7d2397e08a8', 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
+          assert len(results) == 25
+          report = {'grain_commit': '0abc271736ec8ff959b1d5e39dfeb31e9f98347d', 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
           (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
           PY
