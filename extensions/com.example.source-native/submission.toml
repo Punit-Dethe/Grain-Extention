@@ -1,0 +1,15 @@
+schema = 1
+artifact_kind = "native"
+id = "com.example.source-native"
+version = "0.1.0"
+grain_api = "^1.0"
+source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
+tag = "fixtures-native-v0.1.0"
+commit = "be97b2733766965c4a77fbe3965899cecc4c9389"
+summary = "A Grain extension by Tools"
+categories = ["tools"]
+license = "MIT"
+contact = "fixture@example.invalid"
+description_sha256 = "77fdb04a5457a19717efd76585265816b7fda981b041d3b1040ad77040fb93c4"
+description_size = 40
+media = []

@@ -1,0 +1,172 @@
+# Reusable unprivileged author build -> fresh trusted preparation -> data-only OIDC.
+# No publishing key, environment secret or automatic review approval exists here.
+name: build-source-candidate
+on:
+  workflow_call:
+    inputs:
+      submission_id:
+        required: true
+        type: string
+permissions: {}
+
+jobs:
+  request:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      repo: ${{ steps.request.outputs.repo }}
+      commit: ${{ steps.request.outputs.commit }}
+      kind: ${{ steps.request.outputs.kind }}
+      tool_sha256: ${{ steps.request.outputs.tool_sha256 }}
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          path: registry
+          persist-credentials: false
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          repository: Punit-Dethe/Grain
+          ref: 6d75c5a100cad9f2d543ffc91b08cf0667db3b4a
+          path: grain
+          persist-credentials: false
+      - name: Build pinned trusted maintainer tools
+        working-directory: grain
+        run: |
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/grain-target"
+          echo "CARGO_TARGET_DIR=$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          rustup toolchain install 1.96.0 --profile minimal --no-self-update
+          cargo +1.96.0 build --locked -p grain-registry-tools
+      - name: Validate strict source request; do not evaluate submission input in a shell
+        id: request
+        env:
+          SUBMISSION_ID: ${{ inputs.submission_id }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re, shutil, subprocess
+          identifier = os.environ['SUBMISSION_ID']
+          if not re.fullmatch(r'[a-z0-9]+(?:[.-][a-z0-9]+)+', identifier):
+              raise ValueError('Invalid submission ID')
+          tool = pathlib.Path(os.environ['CARGO_TARGET_DIR']) / 'debug/grain-registry'
+          scratch = pathlib.Path(os.environ['RUNNER_TEMP']) / 'toolbox'
+          scratch.mkdir()
+          subprocess.run([str(tool), 'inspect-submission', '--submission', 'registry/extensions/' + identifier, '--out', str(scratch / 'request.json')], check=True, timeout=30)
+          request = json.loads((scratch / 'request.json').read_bytes())
+          pin = hashlib.sha256(tool.read_bytes()).hexdigest()
+          shutil.copyfile(tool, scratch / 'grain-registry')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              for key, value in {'repo': request['source_repo'].removeprefix('https://github.com/'), 'commit': request['commit'], 'kind': request['artifact_kind'], 'tool_sha256': pin}.items():
+                  output.write(key + '=' + value + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: source-tools-${{ inputs.submission_id }}
+          path: ${{ runner.temp }}/toolbox/
+          retention-days: 7
+          if-no-files-found: error
+
+  author-build:
+    needs: request
+    if: needs.request.outputs.kind == 'native'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          repository: ${{ needs.request.outputs.repo }}
+          ref: ${{ needs.request.outputs.commit }}
+          persist-credentials: false
+          path: source
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.11.1
+          # No cross-job dependency cache or npm credential is used.
+      - name: Execute author build only here, with no OIDC or signing authority
+        working-directory: source
+        run: |
+          test -z "$ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+          test -z "$GRAIN_PUBLISHING_KEY"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: source-built-${{ inputs.submission_id }}
+          path: source/dist/main.js
+          retention-days: 7
+          if-no-files-found: error
+
+  prepare:
+    needs: [request, author-build]
+    if: always() && needs.request.result == 'success' && (needs.author-build.result == 'success' || needs.author-build.result == 'skipped')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          path: registry
+          persist-credentials: false
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          repository: ${{ needs.request.outputs.repo }}
+          ref: ${{ needs.request.outputs.commit }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: source-tools-${{ inputs.submission_id }}
+          path: ${{ runner.temp }}/toolbox
+      - if: needs.request.outputs.kind == 'native'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: source-built-${{ inputs.submission_id }}
+          path: ${{ runner.temp }}/native-result
+      - name: Revalidate fresh source/tag and prepare checked bytes; never execute build output
+        env:
+          SUBMISSION_ID: ${{ inputs.submission_id }}
+          TOOL_SHA256: ${{ needs.request.outputs.tool_sha256 }}
+          KIND: ${{ needs.request.outputs.kind }}
+        run: |
+          args=()
+          if [ "$KIND" = native ]; then args+=(--native-result "$RUNNER_TEMP/native-result"); fi
+          python3 registry/ci/provenance/prepare-source.py --tool "$RUNNER_TEMP/toolbox/grain-registry" --tool-sha256 "$TOOL_SHA256" --submission "registry/extensions/$SUBMISSION_ID" --source source --out "$RUNNER_TEMP/checked-source" --grain-commit 6d75c5a100cad9f2d543ffc91b08cf0667db3b4a "${args[@]}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: checked-source-${{ inputs.submission_id }}
+          path: ${{ runner.temp }}/checked-source/
+          retention-days: 7
+          if-no-files-found: error
+
+  attest:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: checked-source-${{ inputs.submission_id }}
+          path: ${{ runner.temp }}/checked-source
+      - id: proof
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: |
+            ${{ runner.temp }}/checked-source/candidate/candidate.json
+            ${{ runner.temp }}/checked-source/producer.json
+      - env:
+          BUNDLE: ${{ steps.proof.outputs.bundle-path }}
+        run: cp -- "$BUNDLE" "$RUNNER_TEMP/checked-source/attestation.jsonl"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: attested-source-${{ inputs.submission_id }}
+          path: ${{ runner.temp }}/checked-source/
+          retention-days: 7
+          if-no-files-found: error

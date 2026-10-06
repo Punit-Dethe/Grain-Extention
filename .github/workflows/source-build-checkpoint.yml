@@ -1,0 +1,24 @@
+# Isolated branch fixtures only, not a publisher or human approval.
+name: source-build-checkpoint
+on:
+  push:
+    branches: [registry/trusted-provenance]
+    paths: [".github/workflows/build-source-candidate.yml", ".github/workflows/source-build-checkpoint.yml", "ci/provenance/prepare-source.py", "extensions/com.example.source-*/**"]
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: source-build-checkpoint-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    strategy:
+      fail-fast: false
+      matrix:
+        id: [com.example.source-native, com.example.source-mcp]
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/build-source-candidate.yml
+    with:
+      submission_id: ${{ matrix.id }}
