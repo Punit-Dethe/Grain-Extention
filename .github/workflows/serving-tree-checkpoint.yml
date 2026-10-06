@@ -1,0 +1,115 @@
+# Local filesystem acceptance only. No publishing, keys, author builds or OIDC.
+name: serving-tree-checkpoint
+on:
+  push:
+    branches: [registry/trusted-provenance]
+    paths: [".github/workflows/serving-tree-checkpoint.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: serving-tree-checkpoint-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  local-serving:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          repository: Punit-Dethe/Grain
+          ref: af28a2434506181336d00978be9fa7d2397e08a8
+          path: grain
+          persist-credentials: false
+      - name: Set up pinned toolchain and owned evidence
+        run: |
+          mkdir "$RUNNER_TEMP/serving-evidence"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/grain-target" >> "$GITHUB_ENV"
+          rustup toolchain install 1.96.0 --profile minimal --no-self-update
+      - name: Real signed snapshot, promotion and Unix symlink tests
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          set -o pipefail
+          cargo +1.96.0 test --locked -p grain-registry-tools serving::tests -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/component.log"
+      - name: Build exact production CLI
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          set -o pipefail
+          cargo +1.96.0 build --locked -p grain-registry-tools 2>&1 | tee "$RUNNER_TEMP/serving-evidence/build.log"
+      - name: Actual pinned-root CLI and independent process locking
+        working-directory: grain
+        run: |
+          python3 - <<'PY'
+          import fcntl, hashlib, json, os, shutil, subprocess
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'serving-evidence'
+          tool = Path(os.environ['CARGO_TARGET_DIR']) / 'debug/grain-registry'
+          seed = root / 'seed'
+          seed.mkdir(); (seed / 'blob').mkdir(); (seed / 'media').mkdir()
+          for name in ['roots', 'index', 'revocations']:
+              for suffix in ['.json', '.json.minisig']:
+                  shutil.copyfile(Path('crates/grain-core/seed') / (name + suffix), seed / (name + suffix))
+          results = []
+          def digest(data): return hashlib.sha256(data).hexdigest()
+          def run(label, args, error=None):
+              child = subprocess.Popen([str(tool)] + [str(a) for a in args], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+              try: stdout, stderr = child.communicate(timeout=30)
+              except BaseException:
+                  child.kill(); child.wait(); raise
+              output = stdout + stderr
+              (root / (label + '.log')).write_text(output, encoding='utf-8')
+              if error: assert child.returncode != 0 and error in output, (label, output)
+              else: assert child.returncode == 0, (label, output)
+              results.append({'label': label, 'pid': child.pid, 'exit': child.returncode, 'expected': error or 'success'})
+          run('seed-real-root-chain', ['verify-serving-tree', '--v1', seed])
+          assembly = root / 'assembly'
+          run('complete-seed-assembly', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', assembly])
+          run('complete-assembly-verify', ['verify-serving-tree', '--v1', assembly / 'v1'])
+          store = root / 'store'
+          run('initialize-local-store', ['initialize-serving-store', '--v1', assembly / 'v1', '--out', store])
+          before = (store / 'current.json').read_bytes(); pin = digest(before)
+          args = ['promote-serving-tree', '--assembly', assembly, '--store', store, '--expected-current-sha256', pin]
+          run('initialize-no-overwrite', ['initialize-serving-store', '--v1', seed, '--out', store], 'already exists')
+          run('assemble-no-overwrite', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', assembly], 'already exists')
+          run('assemble-no-input-mutation', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', seed / 'nested'], 'outside')
+          run('stale-current-conflict', args[:-1] + ['0' * 64], 'pointer changed')
+          run('no-repeat-promotion', args, 'No metadata change')
+          with open(store / 'promotion.lock', 'r+b', buffering=0) as held:
+              fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
+              try: run('actual-cross-process-lock', args, 'store lock')
+              finally: fcntl.flock(held, fcntl.LOCK_UN)
+          run('lock-release-recovery', args, 'No metadata change')
+          for document in ['roots.json', 'index.json', 'revocations.json']:
+              file = seed / document; original = file.read_bytes()
+              try:
+                  file.write_bytes(original + b' ')
+                  run('tampered-' + document, ['verify-serving-tree', '--v1', seed], 'signature does not verify')
+              finally: file.write_bytes(original)
+          extra = seed / 'media/extra.md'
+          try:
+              extra.write_text('unexpected asset')
+              run('unreferenced-asset-refused', ['verify-serving-tree', '--v1', seed], 'Unexpected')
+          finally: extra.unlink()
+          try:
+              bad = json.loads(before); bad['snapshot'] = '../escape'
+              (store / 'current.json').write_bytes(json.dumps(bad).encode())
+              run('pointer-traversal-refused', args[:-1] + [digest((store / 'current.json').read_bytes())], 'Malformed serving pointer')
+          finally: (store / 'current.json').write_bytes(before)
+          assert (store / 'current.json').read_bytes() == before
+          assert len(list((store / 'snapshots').iterdir())) == 1
+          assert len(results) == 16
+          report = {'grain_commit': 'af28a2434506181336d00978be9fa7d2397e08a8', 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
+          (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: serving-tree-evidence
+          path: ${{ runner.temp }}/serving-evidence/
+          retention-days: 7
+          if-no-files-found: error
