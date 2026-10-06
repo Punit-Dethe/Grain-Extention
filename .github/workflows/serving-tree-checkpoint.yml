@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 7eed2f1f6a6f1048fc4b3e11bc66e2714ac6fe84
+          ref: ac965830befecbb27a85e4a4d8051ef8730e4889
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -26,13 +26,13 @@ jobs:
           mkdir "$RUNNER_TEMP/serving-evidence"
           echo "CARGO_TARGET_DIR=$RUNNER_TEMP/grain-target" >> "$GITHUB_ENV"
           rustup toolchain install 1.96.0 --profile minimal --no-self-update
-      - name: Real signed snapshot, promotion and Unix symlink tests
+      - name: Maintainer regressions, real signed renewal and Unix symlink tests
         working-directory: grain
         env:
           CARGO_PROFILE_DEV_DEBUG: 0
         run: |
           set -o pipefail
-          cargo +1.96.0 test --locked -p grain-registry-tools serving::tests -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/component.log"
+          cargo +1.96.0 test --locked -p grain-registry-tools -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/component.log"
       - name: Build exact production CLI
         working-directory: grain
         env:
@@ -72,6 +72,25 @@ jobs:
           store = root / 'store'
           run('initialize-local-store', ['initialize-serving-store', '--v1', assembly / 'v1', '--out', store])
           before = (store / 'current.json').read_bytes(); pin = digest(before)
+          renewal_output = root / 'refused-renewal'
+          renewal_args = ['renew-serving-metadata', '--v1', seed, '--expected-snapshot-sha256', json.loads(before)['snapshot'], '--key', root / 'never-open.key', '--out', renewal_output, '--expires-days', '30']
+          renewal_inputs = {name: (seed / name).read_bytes() for name in ['roots.json', 'roots.json.minisig', 'index.json', 'index.json.minisig', 'revocations.json', 'revocations.json.minisig']}
+          occupied = root / 'renewal-occupied'; occupied.mkdir(); (occupied / 'keep').write_text('preserve')
+          for label, flag, value, error in [
+              ('renewal-real-anchor-no-shortening', '--expires-days', '30', 'extend both'),
+              ('renewal-invalid-pin', '--expected-snapshot-sha256', 'bad', 'independent snapshot'),
+              ('renewal-stale-pin', '--expected-snapshot-sha256', '0' * 64, 'snapshot changed'),
+              ('renewal-lifetime-zero', '--expires-days', '0', 'one to thirty'),
+              ('renewal-lifetime-thirty-one', '--expires-days', '31', 'one to thirty'),
+              ('renewal-output-containment', '--out', seed / 'nested-renewal', 'outside'),
+              ('renewal-existing-output', '--out', occupied, 'already exists'),
+          ]:
+              attempt = renewal_args.copy(); attempt[attempt.index(flag) + 1] = value
+              run(label, attempt, error)
+              assert not renewal_output.exists(), label
+          assert not (seed / 'nested-renewal').exists() and not (root / 'never-open.key').exists()
+          assert (occupied / 'keep').read_text() == 'preserve'
+          for name, data in renewal_inputs.items(): assert (seed / name).read_bytes() == data
           args = ['promote-serving-tree', '--assembly', assembly, '--store', store, '--expected-current-sha256', pin]
           run('initialize-no-overwrite', ['initialize-serving-store', '--v1', seed, '--out', store], 'already exists')
           run('assemble-no-overwrite', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', assembly], 'already exists')
