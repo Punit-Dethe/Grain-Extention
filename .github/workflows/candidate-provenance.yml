@@ -20,8 +20,6 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-    env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/grain-target
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -36,6 +34,8 @@ jobs:
       - name: Build pinned maintainer tools, with no OIDC or publishing credentials
         working-directory: grain
         run: |
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/grain-target"
+          echo "CARGO_TARGET_DIR=$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
           rustup toolchain install 1.96.0 --profile minimal --no-self-update
           cargo +1.96.0 build --locked -p grain-registry-tools -p grain-ext-cli
       - name: Prepare controlled native and MCP candidates (no extension execution)
