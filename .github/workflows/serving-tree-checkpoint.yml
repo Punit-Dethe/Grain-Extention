@@ -18,10 +18,10 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: ee558607e7f6a8999bc659ac09ab51eed3416d5a
+          ref: ae79f10a3af5ec823ec23726cafa44245faa39db
           path: grain
           persist-credentials: false
-      - name: Read-only pinned legacy baseline for deliberate migration refusal
+      - name: Read-only complete pinned legacy history and incomplete-baseline refusal
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain-Extention
@@ -48,6 +48,13 @@ jobs:
         run: |
           set -o pipefail
           cargo +1.96.0 build --locked -p grain-registry-tools 2>&1 | tee "$RUNNER_TEMP/serving-evidence/build.log"
+      - name: Existing active core trust regressions
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          set -o pipefail
+          cargo +1.96.0 test --locked -p grain-core trust:: -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/core-trust.log"
       - name: Actual pinned-root CLI and independent process locking
         working-directory: grain
         run: |
@@ -254,6 +261,13 @@ jobs:
           (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
           PY
+      - name: Actual public CLI legacy archival and exact Git byte comparisons
+        working-directory: grain
+        run: |
+          python3 crates/grain-registry-tools/tests/legacy_history_cli.py \
+            --tool "$CARGO_TARGET_DIR/debug/grain-registry" \
+            --checkout "../legacy-registry" \
+            --output "$RUNNER_TEMP/serving-evidence/legacy-history"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
