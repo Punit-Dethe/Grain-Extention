@@ -1,0 +1,85 @@
+# Controlled CI checkpoint only. No author build, review approval or publishing key.
+# This branch lane must not be treated as a protected production publisher.
+name: candidate-provenance
+
+on:
+  push:
+    branches: [registry/trusted-provenance]
+    paths: [".github/workflows/candidate-provenance.yml", "ci/provenance/**"]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: candidate-provenance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/grain-target
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          persist-credentials: false
+          path: registry
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          repository: Punit-Dethe/Grain
+          ref: 1be8a2c0b6f657461aebe5291a20ec379d23135b
+          persist-credentials: false
+          path: grain
+      - name: Build pinned maintainer tools, with no OIDC or publishing credentials
+        working-directory: grain
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --no-self-update
+          cargo +1.96.0 build --locked -p grain-registry-tools -p grain-ext-cli
+      - name: Prepare controlled native and MCP candidates (no extension execution)
+        run: >-
+          python3 registry/ci/provenance/fixtures.py
+          --registry-tool "$CARGO_TARGET_DIR/debug/grain-registry"
+          --author-tool "$CARGO_TARGET_DIR/debug/grain-ext"
+          --out "$RUNNER_TEMP/candidate-checkpoint"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: checked-candidates
+          path: ${{ runner.temp }}/candidate-checkpoint/
+          if-no-files-found: error
+          retention-days: 7
+
+  attest:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      # Only checked data is downloaded. No artifact script or executable runs here.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: checked-candidates
+          path: ${{ runner.temp }}/checked-candidates
+      - name: Attest exact native/MCP candidate bytes with the maintained GitHub action
+        id: proof
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: |
+            ${{ runner.temp }}/checked-candidates/native/candidate/candidate.json
+            ${{ runner.temp }}/checked-candidates/mcp/candidate/candidate.json
+            ${{ runner.temp }}/checked-candidates/producer.json
+      - name: Retain the cryptographic bundle beside the checked data
+        env:
+          BUNDLE_PATH: ${{ steps.proof.outputs.bundle-path }}
+        run: cp -- "$BUNDLE_PATH" "$RUNNER_TEMP/checked-candidates/attestation.jsonl"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: attested-candidates
+          path: ${{ runner.temp }}/checked-candidates/
+          if-no-files-found: error
+          retention-days: 7
