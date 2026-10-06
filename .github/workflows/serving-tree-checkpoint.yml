@@ -178,8 +178,8 @@ jobs:
           finally: (store / 'current.json').write_bytes(before)
           assert (store / 'current.json').read_bytes() == before
           assert len(list((store / 'snapshots').iterdir())) == 1
-          assert len(results) == 39
-          report = {'grain_commit': '7eed2f1f6a6f1048fc4b3e11bc66e2714ac6fe84', 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
+          assert len(results) == 46
+          report = {'grain_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True, timeout=30).strip(), 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
           (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
           PY
