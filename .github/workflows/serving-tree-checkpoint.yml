@@ -18,23 +18,15 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 8b2d40c19b4a902d3bf9282dea5c96eab9bd5249
+          ref: 35ccedff43cc651f4dae2a9f3b94d7e59efe806d
           path: grain
-          persist-credentials: false
-      - name: Read-only complete pinned legacy history and incomplete-baseline refusal
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
-        with:
-          repository: Punit-Dethe/Grain-Extention
-          ref: af6e24425d0eba1f667913f8a5403e9a6fb7ce76
-          path: legacy-registry
-          fetch-depth: 0
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
         run: |
           mkdir "$RUNNER_TEMP/serving-evidence"
           echo "CARGO_TARGET_DIR=$RUNNER_TEMP/grain-target" >> "$GITHUB_ENV"
           rustup toolchain install 1.96.0 --profile minimal --no-self-update
-      - name: Maintainer regressions, signed legacy migration, Git races and Unix guards
+      - name: Current maintainer regressions, clean bootstrap, Git races and Unix guards
         working-directory: grain
         env:
           CARGO_PROFILE_DEV_DEBUG: 0
@@ -231,10 +223,6 @@ jobs:
               attempt[attempt.index(flag) + 1] = value
               run(label, attempt, error)
               assert not capture_refused.exists()
-          legacy_args = capture_args.copy()
-          for flag, value in [('--checkout', Path('../legacy-registry').resolve()), ('--repository', 'Punit-Dethe/Grain-Extention'), ('--expected-commit', 'af6e24425d0eba1f667913f8a5403e9a6fb7ce76'), ('--expected-receipt-sha256', '0' * 64), ('--out', capture_refused)]:
-              legacy_args[legacy_args.index(flag) + 1] = value
-          run('capture-real-legacy-baseline-refused', legacy_args, 'protected legacy migration required')
           assert not capture_refused.exists() and not (capture_repo / 'contained').exists()
           assert (capture_repo / 'v1/index.json').read_text() == 'ignore dirty worktree'
           for document in ['roots.json', 'index.json', 'revocations.json']:
@@ -256,18 +244,21 @@ jobs:
           finally: (store / 'current.json').write_bytes(before)
           assert (store / 'current.json').read_bytes() == before
           assert len(list((store / 'snapshots').iterdir())) == 1
-          assert len(results) == 60
-          report = {'grain_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True, timeout=30).strip(), 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'capture_git_pids': capture_git_pids, 'capture_commit': capture_commit, 'captured_files': capture_receipt['files'], 'bundle_receipt_sha256': bundle_pin, 'real_legacy_commit': 'af6e24425d0eba1f667913f8a5403e9a6fb7ce76', 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
+          assert len(results) == 59
+          run('cli-default-stack-help', ['--help'])
+          for retired in ['capture-legacy-history', 'verify-legacy-history', 'sign-legacy-migration', 'prepare-github-migration']:
+              run('removed-' + retired, [retired], 'unrecognized subcommand')
+          bootstrap_out = root / 'never-created-bootstrap'
+          bootstrap_key = root / 'never.key'
+          run('bootstrap-lifetime-refused', ['bootstrap-serving-tree', '--key', bootstrap_key, '--expires-days', '0', '--out', bootstrap_out], 'one through thirty')
+          run('bootstrap-explicit-key-required', ['bootstrap-serving-tree', '--key', bootstrap_key, '--out', bootstrap_out], 'Read explicit bootstrap publisher key')
+          run('current-seed-real-root', ['verify-serving-tree', '--v1', seed])
+          assert not bootstrap_out.exists() and not bootstrap_key.exists()
+          assert len(results) == 67
+          report = {'grain_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True, timeout=30).strip(), 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'capture_git_pids': capture_git_pids, 'capture_commit': capture_commit, 'captured_files': capture_receipt['files'], 'bundle_receipt_sha256': bundle_pin, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
           (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
           PY
-      - name: Actual public CLI legacy archival and exact Git byte comparisons
-        working-directory: grain
-        run: |
-          python3 crates/grain-registry-tools/tests/legacy_history_cli.py \
-            --tool "$CARGO_TARGET_DIR/debug/grain-registry" \
-            --checkout "../legacy-registry" \
-            --output "$RUNNER_TEMP/serving-evidence/legacy-history"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
