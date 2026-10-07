@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 9c6e15df47932fddc688ad503dbb8173b6b36f8e
+          ref: 801d0d9c10f128210d6b174031777272517d577a
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -63,11 +63,11 @@ jobs:
         working-directory: grain
         run: |
           python3 crates/grain-registry-tools/ci/check_initial_cli.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --evidence "$RUNNER_TEMP/serving-evidence/initial-cli"
-      - name: Conditional publication runner boundaries
+      - name: Conditional publisher and public HTTP transport boundaries
         working-directory: grain
         run: |
           set -o pipefail
-          python3 -m unittest discover -s crates/grain-registry-tools/ci -p test_publish_github.py -v 2>&1 | tee "$RUNNER_TEMP/serving-evidence/publisher.log"
+          python3 -m unittest discover -s crates/grain-registry-tools/ci -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/serving-evidence/publisher-and-delivery.log"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()

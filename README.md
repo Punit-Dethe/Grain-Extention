@@ -44,6 +44,21 @@ Merging this draft does not deploy a catalogue; initial activation and actual
 HTTP/app coherence remain a separate acceptance step. Seven-day CI artifacts
 are evidence, not permanent distribution or source approval.
 
+After its confirmed single Git push, `publish` now checks anonymous public HTTP
+delivery against the commit-pinned signed bundle: metadata, native/MCP blobs,
+DESCRIPTION/media and retained proof at both the exact commit and `main` URLs.
+Stale/mixed/missing/changed content fails. The six live metadata files and Git
+head are rechecked, with signed freshness verified again after the scan.
+A failed delivery check **does not mean the confirmed push failed**: rerun only
+Grain's `ci/check_hosted_github.py`, never replay publication. HTTP evidence is
+separate from actual app installation and release approval. No signing key,
+author execution, public trust override or automatic retry is added.
+
+Read-only inspection on 8 October found no protection rules in the `publish`
+environment and no branch protection on `main`. Operator approval/deployment
+controls, applicable repository rules, signer custody and actual signed activation
+must still be reviewed before using this draft. The workflow changes no controls.
+
 ## Layout
 
 ```text

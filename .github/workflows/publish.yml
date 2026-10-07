@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 9c6e15df47932fddc688ad503dbb8173b6b36f8e
+          ref: 801d0d9c10f128210d6b174031777272517d577a
           path: grain
           persist-credentials: false
       - name: Validate independent inputs before candidate checkout
@@ -74,12 +74,12 @@ jobs:
           echo "CARGO_TARGET_DIR=$RUNNER_TEMP/grain-target" >> "$GITHUB_ENV"
           rustup toolchain install 1.96.0 --profile minimal --no-self-update
           CARGO_TARGET_DIR="$RUNNER_TEMP/grain-target" cargo +1.96.0 build --locked -p grain-registry-tools
-      - name: Verify signed bytes, conditionally push once, confirm remote main
+      - name: Verify signed bytes, push once, confirm Git and public HTTP separately
         env:
           PUBLICATION_TOKEN: ${{ github.token }}
         run: |
           set -o pipefail
-          python3 grain/crates/grain-registry-tools/ci/publish_github.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --checkout candidate --publish 2>&1 | tee "$RUNNER_TEMP/publication.log"
+          python3 grain/crates/grain-registry-tools/ci/publish_github.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --checkout candidate --publish --check-http 2>&1 | tee "$RUNNER_TEMP/publication.log"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
