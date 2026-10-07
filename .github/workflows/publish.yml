@@ -1,72 +1,89 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# publish — the ONLY job that holds the publishing key. Runs on MERGE only, and
-# runs NO untrusted code. It rebuilds the artifact from the already-reviewed
-# pinned commit, hashes it, signs the regenerated index, and uploads a Release.
-#
-# The secret `GRAIN_PUBLISHING_KEY` is referenced ONLY in this file. See
-# build-and-check.yml for why the boundary between "runs untrusted code" and
-# "holds the key" is non-negotiable (Open VSX, F-7).
-# ─────────────────────────────────────────────────────────────────────────────
+# Manual activation of an ALREADY SIGNED candidate. No author build, signing
+# key, release upload or automatic publish-on-merge. Main activation is separate
+# from landing workflow/tool changes. Repository protection may refuse the push;
+# this job never changes/bypasses those settings.
 name: publish
-
 on:
-  push:
-    branches: [main]
-    paths:
-      - "extensions/**"
-
-permissions:
-  contents: write # create the Release
-
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Initial empty bootstrap, or ordinary signed update
+        type: choice
+        options: [initial, update]
+        required: true
+      expected_base_commit:
+        description: Independently reviewed full current main SHA
+        type: string
+        required: true
+      candidate_commit:
+        description: Signed publication commit; sole parent must equal base
+        type: string
+        required: true
+      candidate_receipt_sha256:
+        description: Independently reviewed .registry-publication/bundle.json SHA256
+        type: string
+        required: true
+      previous_receipt_sha256:
+        description: Previous bundle SHA256 for update only; empty for initial
+        type: string
+        required: false
+permissions: {}
+concurrency:
+  group: registry-publication-main
+  cancel-in-progress: false
 jobs:
   publish:
-    runs-on: ubuntu-latest
-    environment: publish # scopes the secret to this job/environment
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: publish
+    permissions:
+      contents: write
+    env:
+      PUBLICATION_REPOSITORY: ${{ github.repository }}
+      PUBLICATION_BASE: ${{ inputs.expected_base_commit }}
+      PUBLICATION_CANDIDATE: ${{ inputs.candidate_commit }}
+      PUBLICATION_RECEIPT: ${{ inputs.candidate_receipt_sha256 }}
+      PUBLICATION_MODE: ${{ inputs.mode }}
+      PUBLICATION_PREVIOUS_RECEIPT: ${{ inputs.previous_receipt_sha256 }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Read submission.toml
-        id: sub
-        run: ./ci/read-submission.sh
-
-      # Reproducibly rebuild from the PINNED commit — the same bytes a human
-      # reviewed. No `bun install` of untrusted scripts happens with the key in
-      # scope: the build artifact is produced from the pinned, reviewed source,
-      # and the reproducibility check confirms it matches build-and-check's hash.
-      - name: Check out the pinned source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
-          repository: ${{ steps.sub.outputs.source_repo }}
-          ref: ${{ steps.sub.outputs.commit }}
-          path: source
-
-      - name: Build the pack (deterministic)
-        run: grain-registry build-pack --src source --out artifact.grainpack
-
-      - name: Hash · sign · publish · regenerate the index
-        env:
-          GRAIN_PUBLISHING_KEY: ${{ secrets.GRAIN_PUBLISHING_KEY }}
+          repository: Punit-Dethe/Grain
+          ref: ed55bf1df86dcd994fb43cecdb8f1abf033de8d7
+          path: grain
+          persist-credentials: false
+      - name: Validate independent inputs before candidate checkout
         run: |
-          echo "$GRAIN_PUBLISHING_KEY" > publishing.key
-          grain-registry publish \
-            --key publishing.key \
-            --pack artifact.grainpack \
-            --trust verified \
-            --repo "${{ steps.sub.outputs.source_repo }}" \
-            --commit "${{ steps.sub.outputs.commit }}" \
-            --author "${{ steps.sub.outputs.author }}" \
-            --v1 v1
-          rm -f publishing.key
-
-      - name: Upload the signed catalogue + blob as a Release
-        uses: softprops/action-gh-release@v2
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, 'grain/crates/grain-registry-tools/ci')
+          from publish_github import identity
+          identity(*[os.environ.get(name, '') for name in ['PUBLICATION_REPOSITORY', 'PUBLICATION_BASE', 'PUBLICATION_CANDIDATE', 'PUBLICATION_RECEIPT', 'PUBLICATION_MODE', 'PUBLICATION_PREVIOUS_RECEIPT']])
+          PY
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
-          tag_name: v1
-          files: |
-            v1/index.json
-            v1/index.json.minisig
-            v1/roots.json
-            v1/roots.json.minisig
-            v1/revocations.json
-            v1/revocations.json.minisig
-            v1/blob/*.grainpack
+          ref: ${{ inputs.candidate_commit }}
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Build pinned trusted verifier; never run candidate scripts
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/grain-target" >> "$GITHUB_ENV"
+          rustup toolchain install 1.96.0 --profile minimal --no-self-update
+          CARGO_TARGET_DIR="$RUNNER_TEMP/grain-target" cargo +1.96.0 build --locked -p grain-registry-tools
+      - name: Verify signed bytes, conditionally push once, confirm remote main
+        env:
+          PUBLICATION_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          python3 grain/crates/grain-registry-tools/ci/publish_github.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --checkout candidate --publish 2>&1 | tee "$RUNNER_TEMP/publication.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: publication-evidence
+          path: ${{ runner.temp }}/publication.log
+          retention-days: 7
+          if-no-files-found: warn

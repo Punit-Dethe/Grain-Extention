@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 35ccedff43cc651f4dae2a9f3b94d7e59efe806d
+          ref: ed55bf1df86dcd994fb43cecdb8f1abf033de8d7
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -259,6 +259,12 @@ jobs:
           (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
           PY
+      - name: First-publication runner boundaries and shared actual CLI checks
+        working-directory: grain
+        run: |
+          set -o pipefail
+          python3 -m unittest discover -s crates/grain-registry-tools/ci -p test_publish_github.py -v 2>&1 | tee "$RUNNER_TEMP/serving-evidence/publisher.log"
+          python3 crates/grain-registry-tools/ci/check_initial_cli.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --evidence "$RUNNER_TEMP/serving-evidence/initial-cli"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:

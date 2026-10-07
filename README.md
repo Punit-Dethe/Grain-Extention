@@ -1,37 +1,50 @@
-# grain-extensions
+# Grain extension registry
 
-The public submission registry for [Grain](https://github.com/Punit-Dethe/Grain)
-extensions. This repository is the **source of truth** for what may be published;
-what the Grain app actually reads is a set of **signed static files** published as
-GitHub Releases (`v1/index.json`, `v1/roots.json`, `v1/revocations.json`, and
-content-addressed `v1/blob/<sha256>.grainpack`) — never the git tree, and never a
-website. kept open source while development 
+Source submissions and signed static catalogue for Grain's **tool-only native
+and MCP extensions**. Grain is unreleased; the experimental catalogue is being
+replaced directly. Old extension/settings compatibility is not required.
 
-- **How to submit:** [CONTRIBUTING.md](CONTRIBUTING.md)
-- **How submissions are reviewed:** [REVIEW-POLICY.md](REVIEW-POLICY.md)
+The app's current trust seed points to `v1/` on this repository's `main` branch
+through GitHub's raw HTTPS host. Signed roots, index and revocations establish
+trust; a GitHub Release tag, README, domain or source manifest does not. This
+publishing route uses GitHub only and needs no permanent Grain website.
 
-## What this is (and is not)
+- `extensions/<id>/submission.toml` pins the author repository, full commit and
+  exact release tag. `DESCRIPTION.md` is store copy; README is developer prose.
+- Native packages and MCP descriptors use the shared current contract/checker.
+  Neither receives screen, selection, OCR or prompt customization privileges.
+- `build-and-check` is a manual trusted-branch entry point to the maintained
+  isolated builder. Author execution, fresh data preparation and attestation are
+  separate jobs. No signing key or publication permission reaches author code.
+- Source approval and exact producer provenance are checked before signing with
+  an explicit operator-owned key. Building/attesting is not human approval.
+- `publish` is manually dispatched for an **already signed** publication-only
+  commit above the independently reviewed current `main` commit. It invokes
+  the pinned Grain verifier, never candidate repository scripts or author builds.
+  It uses a scoped workflow token, with no publisher signing key or OIDC.
+- `initial` accepts the empty seed-derived bootstrap only when the base has no
+  publication proof. `update` requires the previous signed bundle's independent
+  receipt pin. Both verify complete committed bytes and push once using an
+  exact-base lease. Unknown outcomes are inspected, never automatically retried.
 
-- **Is:** a place to submit a *source pointer* (repo + pinned commit) via pull
-  request. We build the artifact ourselves, from your pinned commit, so
-  "reviewed" and "installed" are provably the same bytes.
-- **Is not:** an upload host. You never submit a built artifact, an account, a
-  signing key, or a payment method.
-
-## Trust, in one line
-
-If an extension is listed in the store, **a human read its source at that exact
-version.** Trust lives only inside the signed index we produce — never in your
-manifest, your pack, your repo, or your domain.
+The `publish` environment and branch protection must be configured/reviewed by
+the operator. No workflow changes those controls or grants its own approval.
+Merging this draft does not deploy a catalogue; initial activation and actual
+HTTP/app coherence remain a separate acceptance step. Seven-day CI artifacts
+are evidence, not permanent distribution or source approval.
 
 ## Layout
 
+```text
+extensions/<id>/           pinned current source submission and DESCRIPTION.md
+.github/workflows/         isolated builder, manual publisher, read-only checkpoints
+ci/provenance/             trusted data preparation only
+v1/                        signed metadata and content-addressed blob/media files
+.registry-publication/     exact bundle/current/history proof committed with v1
 ```
-extensions/<id>/          one directory per extension id (reverse-DNS)
-  submission.toml         id, source repo, pinned tag + commit, categories, licence, contact
-  README.md               store copy
-  screenshots/            optional
-.github/workflows/        the two-job CI (build-and-check, then publish on merge)
-v1/                        what the app reads (signed; published as Releases)
-site/                      the public shop window (generated from the index)
-```
+
+The current maintainer CLI, workflow runner, commands, safety boundaries and
+checkpoint instructions live in [Grain's registry tooling documentation](https://github.com/Punit-Dethe/Grain/blob/extensions/tool-only-retirement/crates/grain-registry-tools/README.md).
+[Review policy](REVIEW-POLICY.md) describes the current author/producer/signing
+boundary. Existing local CONTRIBUTING changes are separate and are not replaced
+by this publishing block.
