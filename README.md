@@ -9,6 +9,17 @@ through GitHub's raw HTTPS host. Signed roots, index and revocations establish
 trust; a GitHub Release tag, README, domain or source manifest does not. This
 publishing route uses GitHub only and needs no permanent Grain website.
 
+Hosted catalogues include signed `generation.roots_sha256` and
+`generation.revocations_sha256` hashes of exact companion JSON bytes. Each
+companion must also verify its own signature. Mixed publications and the
+unbound offline seed cannot authorize installs or publication. The shared
+signer/renewal rebuilds bindings; the app and pinned publication verifier enforce
+them. Signing custody and public HTTP/app activation remain operator gates.
+
+The read-only checkpoint retires its old unbound-seed serving/no-op shell lane.
+Positive signed bootstrap, renewal, hosting, capture, key rotation and Git races
+remain product regressions; actual public CLI checks cover current refusals.
+
 - `extensions/<id>/submission.toml` pins the author repository, full commit and
   exact release tag. `DESCRIPTION.md` is store copy; README is developer prose.
 - Native packages and MCP descriptors use the shared current contract/checker.

@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: f98d872a453f08135a64aa38af539de74dda56e5
+          ref: 9c6e15df47932fddc688ad503dbb8173b6b36f8e
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -56,224 +56,19 @@ jobs:
         run: |
           set -o pipefail
           cargo +1.96.0 test --locked -p grain-core store_cache:: -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/store-cache.log"
-      - name: Actual pinned-root CLI and independent process locking
+      - name: Current public CLI boundaries with genuine embedded trust
+        # Unbound seed serving/no-op publication cases are retired. Successful
+        # bound publication, renewal, capture and locking use the genuine signed
+        # disposable-anchor product regressions above; no public trust bypass.
         working-directory: grain
         run: |
-          python3 - <<'PY'
-          import fcntl, hashlib, json, os, shutil, subprocess
-          from pathlib import Path
-          root = Path(os.environ['RUNNER_TEMP']) / 'serving-evidence'
-          tool = Path(os.environ['CARGO_TARGET_DIR']) / 'debug/grain-registry'
-          seed = root / 'seed'
-          seed.mkdir(); (seed / 'blob').mkdir(); (seed / 'media').mkdir()
-          for name in ['roots', 'index', 'revocations']:
-              for suffix in ['.json', '.json.minisig']:
-                  shutil.copyfile(Path('crates/grain-core/seed') / (name + suffix), seed / (name + suffix))
-          results = []
-          def digest(data): return hashlib.sha256(data).hexdigest()
-          def run(label, args, error=None):
-              child = subprocess.Popen([str(tool)] + [str(a) for a in args], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-              try: stdout, stderr = child.communicate(timeout=30)
-              except BaseException:
-                  child.kill(); child.wait(); raise
-              output = stdout + stderr
-              (root / (label + '.log')).write_text(output, encoding='utf-8')
-              if error: assert child.returncode != 0 and error in output, (label, output)
-              else: assert child.returncode == 0, (label, output)
-              results.append({'label': label, 'pid': child.pid, 'exit': child.returncode, 'expected': error or 'success'})
-          run('seed-real-root-chain', ['verify-serving-tree', '--v1', seed])
-          publication_args = ['prepare-github-publication', '--checkout', root / 'never-open-checkout', '--repository', 'example/registry', '--branch', 'release', '--expected-base-commit', '1' * 40, '--candidate-commit', '2' * 40, '--previous', root / 'never-open-previous', '--previous-receipt-sha256', '1' * 64, '--bundle', root / 'never-open-bundle', '--expected-receipt-sha256', '2' * 64, '--out', root / 'refused-publication']
-          for label, flag, value, error in [
-              ('publication-repository-refused', '--repository', 'https://elsewhere.invalid/repo', 'OWNER/REPO'),
-              ('publication-candidate-refused', '--candidate-commit', 'bad', 'full Git SHA1'),
-              ('publication-unchanged-commit-refused', '--candidate-commit', '1' * 40, 'distinct full Git SHA1'),
-              ('publication-branch-refused', '--branch', 'release:other', 'branch is malformed'),
-          ]:
-              attempt = publication_args.copy(); attempt[attempt.index(flag) + 1] = value
-              run(label, attempt, error)
-              assert not (root / 'refused-publication').exists(), label
-          for name in ['never-open-checkout', 'never-open-previous', 'never-open-bundle']:
-              assert not (root / name).exists()
-          assembly = root / 'assembly'
-          run('complete-seed-assembly', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', assembly])
-          run('complete-assembly-verify', ['verify-serving-tree', '--v1', assembly / 'v1'])
-          store = root / 'store'
-          run('initialize-local-store', ['initialize-serving-store', '--v1', assembly / 'v1', '--out', store])
-          before = (store / 'current.json').read_bytes(); pin = digest(before)
-          renewal_output = root / 'refused-renewal'
-          renewal_args = ['renew-serving-metadata', '--v1', seed, '--expected-snapshot-sha256', json.loads(before)['snapshot'], '--key', root / 'never-open.key', '--out', renewal_output, '--expires-days', '30']
-          renewal_inputs = {name: (seed / name).read_bytes() for name in ['roots.json', 'roots.json.minisig', 'index.json', 'index.json.minisig', 'revocations.json', 'revocations.json.minisig']}
-          occupied = root / 'renewal-occupied'; occupied.mkdir(); (occupied / 'keep').write_text('preserve')
-          for label, flag, value, error in [
-              ('renewal-real-anchor-no-shortening', '--expires-days', '30', 'extend both'),
-              ('renewal-invalid-pin', '--expected-snapshot-sha256', 'bad', 'independent snapshot'),
-              ('renewal-stale-pin', '--expected-snapshot-sha256', '0' * 64, 'snapshot changed'),
-              ('renewal-lifetime-zero', '--expires-days', '0', 'one to thirty'),
-              ('renewal-lifetime-thirty-one', '--expires-days', '31', 'one to thirty'),
-              ('renewal-output-containment', '--out', seed / 'nested-renewal', 'outside'),
-              ('renewal-existing-output', '--out', occupied, 'already exists'),
-          ]:
-              attempt = renewal_args.copy(); attempt[attempt.index(flag) + 1] = value
-              run(label, attempt, error)
-              assert not renewal_output.exists(), label
-          assert not (seed / 'nested-renewal').exists() and not (root / 'never-open.key').exists()
-          assert (occupied / 'keep').read_text() == 'preserve'
-          for name, data in renewal_inputs.items(): assert (seed / name).read_bytes() == data
-          args = ['promote-serving-tree', '--assembly', assembly, '--store', store, '--expected-current-sha256', pin]
-          run('initialize-no-overwrite', ['initialize-serving-store', '--v1', seed, '--out', store], 'already exists')
-          run('assemble-no-overwrite', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', assembly], 'already exists')
-          run('assemble-no-input-mutation', ['assemble-serving-tree', '--base', seed, '--update', seed, '--out', seed / 'nested'], 'outside')
-          run('stale-current-conflict', args[:-1] + ['0' * 64], 'pointer changed')
-          run('no-repeat-promotion', args, 'No metadata change')
-          with open(store / 'promotion.lock', 'r+b', buffering=0) as held:
-              fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
-              try:
-                  run('actual-cross-process-lock', args, 'store lock')
-                  run('export-cross-process-lock', ['export-serving-snapshot', '--store', store, '--out', root / 'lock-export', '--expected-current-sha256', pin], 'store lock')
-                  run('hosting-cross-process-lock', ['export-hosting-bundle', '--store', store, '--out', root / 'lock-hosting', '--expected-current-sha256', pin], 'store lock')
-              finally: fcntl.flock(held, fcntl.LOCK_UN)
-          run('lock-release-recovery', args, 'No metadata change')
-          export = root / 'export'
-          export_args = ['export-serving-snapshot', '--store', store, '--out', export, '--expected-current-sha256', pin]
-          run('export-selected-real-snapshot', export_args)
-          run('verify-exported-real-snapshot', ['verify-serving-tree', '--v1', export / 'v1'])
-          receipt = json.loads((export / 'snapshot.json').read_bytes())
-          assert receipt['current_sha256'] == pin and receipt['selected'] == json.loads(before)
-          for name in ['roots', 'index', 'revocations']:
-              for suffix in ['.json', '.json.minisig']:
-                  assert (export / 'v1' / (name + suffix)).read_bytes() == (seed / (name + suffix)).read_bytes()
-          run('export-no-overwrite', export_args, 'already exists')
-          refuse = root / 'refused-export'
-          export_args[4] = refuse
-          run('export-stale-pointer', export_args[:-1] + ['a' * 64], 'pointer changed')
-          run('export-invalid-digest', export_args[:-1] + ['bad'], 'Independent current-pointer digest')
-          inside = export_args.copy(); inside[4] = store / 'inside-export'
-          run('export-no-input-mutation', inside, 'outside')
-          selected = store / 'snapshots' / json.loads(before)['snapshot'] / 'index.json'
-          selected_bytes = selected.read_bytes()
-          try:
-              selected.write_bytes(selected_bytes + b' ')
-              run('export-corrupt-selection', export_args, 'signature does not verify')
-          finally: selected.write_bytes(selected_bytes)
-          assert not refuse.exists() and not (root / 'lock-export').exists()
-          hosting = root / 'hosting'
-          hosting_args = ['export-hosting-bundle', '--store', store, '--out', hosting, '--expected-current-sha256', pin]
-          run('export-hosting-bundle', hosting_args)
-          bundle_pin = digest((hosting / 'bundle.json').read_bytes())
-          verify_args = ['verify-hosting-bundle', '--bundle', hosting, '--expected-receipt-sha256', bundle_pin]
-          run('verify-hosting-bundle', verify_args)
-          run('hosting-wrong-receipt', verify_args[:-1] + ['a' * 64], 'receipt digest differs')
-          run('hosting-invalid-receipt', verify_args[:-1] + ['bad'], 'Independent hosting receipt digest')
-          run('hosting-no-overwrite', hosting_args, 'already exists')
-          failed = root / 'failed-hosting'; hosting_args[4] = failed
-          run('hosting-stale-current', hosting_args[:-1] + ['a' * 64], 'pointer changed')
-          inside = hosting_args.copy(); inside[4] = store / 'inside-hosting'
-          run('hosting-no-input-mutation', inside, 'outside')
-          for file, message, label in [(hosting / 'v1/index.json', 'signature does not verify', 'metadata'), (hosting / 'current.json', 'current pointer differs', 'pointer'), (hosting / 'bundle.json', 'receipt digest differs', 'receipt')]:
-              original = file.read_bytes()
-              try:
-                  file.write_bytes(original + b' ')
-                  run('hosting-tampered-' + label, verify_args, message)
-              finally: file.write_bytes(original)
-          extra_history = hosting / 'history' / ('0' * 64)
-          try:
-              extra_history.mkdir()
-              run('hosting-extra-history', verify_args, 'Unexpected')
-          finally: extra_history.rmdir()
-          for file, label in [(hosting / 'v1/media/extra.md', 'asset'), (hosting / 'extra.txt', 'root')]:
-              try:
-                  file.write_text('extra nonsecret input')
-                  run('hosting-extra-' + label, verify_args, 'Unexpected')
-              finally: file.unlink()
-          assert not failed.exists() and not (root / 'lock-hosting').exists()
-          assert (hosting / 'current.json').read_bytes() == before
-          capture_git_pids = []
-          def capture_git(repo, arguments):
-              env = {key: value for key, value in os.environ.items() if not key.upper().startswith('GIT_')}
-              env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL='/dev/null', GIT_TERMINAL_PROMPT='0')
-              child = subprocess.Popen(['git'] + arguments, cwd=repo, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-              try: stdout, stderr = child.communicate(timeout=30)
-              except BaseException:
-                  child.kill(); child.wait(); raise
-              capture_git_pids.append(child.pid)
-              assert child.returncode == 0, (arguments, stderr)
-              return stdout.strip()
-          capture_repo = root / 'capture-checkout'; capture_repo.mkdir()
-          capture_git(capture_repo, ['init', '--initial-branch=release'])
-          for key, value in [('user.name', 'Fixture'), ('user.email', 'fixture@example.invalid'), ('core.autocrlf', 'false'), ('commit.gpgSign', 'false'), ('remote.origin.url', 'https://github.com/example/registry.git')]:
-              capture_git(capture_repo, ['config', '--local', key, value])
-          shutil.copytree(hosting / 'v1', capture_repo / 'v1')
-          proof = capture_repo / '.registry-publication'; proof.mkdir()
-          for name in ['bundle.json', 'current.json']: shutil.copyfile(hosting / name, proof / name)
-          capture_git(capture_repo, ['add', '.']); capture_git(capture_repo, ['commit', '-m', 'disposable publication fixture'])
-          capture_commit = capture_git(capture_repo, ['rev-parse', 'HEAD'])
-          (capture_repo / 'v1/index.json').write_text('ignore dirty worktree')
-          captured = root / 'captured'; capture_refused = root / 'refused-capture'
-          capture_args = ['capture-github-publication', '--checkout', capture_repo, '--repository', 'example/registry', '--expected-commit', capture_commit, '--expected-receipt-sha256', bundle_pin, '--out', captured]
-          run('capture-real-anchor-committed-bytes', capture_args)
-          for original in hosting.rglob('*'):
-              relative = original.relative_to(hosting)
-              if original.is_file(): assert (captured / 'bundle' / relative).read_bytes() == original.read_bytes(), str(relative)
-          for folder in ['v1/blob', 'v1/media', 'history']: assert (captured / 'bundle' / folder).is_dir()
-          capture_receipt = json.loads((captured / 'capture.json').read_text())
-          assert capture_receipt['commit'] == capture_commit and capture_receipt['bundle_receipt_sha256'] == bundle_pin
-          assert capture_receipt['files'] == 8 and 'not-release-approval' in capture_receipt['evidence_class']
-          run('capture-fresh-bundle-verification', ['verify-hosting-bundle', '--bundle', captured / 'bundle', '--expected-receipt-sha256', bundle_pin])
-          for label, flag, value, error in [
-              ('capture-invalid-commit', '--expected-commit', 'bad', 'full Git SHA1 capture commit'),
-              ('capture-invalid-pin', '--expected-receipt-sha256', 'bad', 'receipt digest required'),
-              ('capture-invalid-repository', '--repository', 'https://elsewhere.invalid/repo', 'OWNER/REPO'),
-              ('capture-wrong-receipt', '--expected-receipt-sha256', '0' * 64, 'receipt digest differs'),
-              ('capture-existing-output', '--out', captured, 'already exists'),
-              ('capture-contained-output', '--out', capture_repo / 'contained', 'outside'),
-              ('capture-missing-commit', '--expected-commit', '0' * 40, 'Local Git inspection failed'),
-          ]:
-              attempt = capture_args.copy(); attempt[attempt.index('--out') + 1] = capture_refused
-              attempt[attempt.index(flag) + 1] = value
-              run(label, attempt, error)
-              assert not capture_refused.exists()
-          assert not capture_refused.exists() and not (capture_repo / 'contained').exists()
-          assert (capture_repo / 'v1/index.json').read_text() == 'ignore dirty worktree'
-          for document in ['roots.json', 'index.json', 'revocations.json']:
-              file = seed / document; original = file.read_bytes()
-              try:
-                  file.write_bytes(original + b' ')
-                  run('tampered-' + document, ['verify-serving-tree', '--v1', seed], 'signature does not verify')
-              finally: file.write_bytes(original)
-          extra = seed / 'media/extra.md'
-          try:
-              extra.write_text('unexpected asset')
-              run('unreferenced-asset-refused', ['verify-serving-tree', '--v1', seed], 'Unexpected')
-          finally: extra.unlink()
-          try:
-              bad = json.loads(before); bad['snapshot'] = '../escape'
-              (store / 'current.json').write_bytes(json.dumps(bad).encode())
-              run('pointer-traversal-refused', args[:-1] + [digest((store / 'current.json').read_bytes())], 'Malformed serving pointer')
-              run('export-pointer-traversal-refused', export_args[:-1] + [digest((store / 'current.json').read_bytes())], 'Malformed serving pointer')
-          finally: (store / 'current.json').write_bytes(before)
-          assert (store / 'current.json').read_bytes() == before
-          assert len(list((store / 'snapshots').iterdir())) == 1
-          assert len(results) == 59
-          run('cli-default-stack-help', ['--help'])
-          for retired in ['capture-legacy-history', 'verify-legacy-history', 'sign-legacy-migration', 'prepare-github-migration']:
-              run('removed-' + retired, [retired], 'unrecognized subcommand')
-          bootstrap_out = root / 'never-created-bootstrap'
-          bootstrap_key = root / 'never.key'
-          run('bootstrap-lifetime-refused', ['bootstrap-serving-tree', '--key', bootstrap_key, '--expires-days', '0', '--out', bootstrap_out], 'one through thirty')
-          run('bootstrap-explicit-key-required', ['bootstrap-serving-tree', '--key', bootstrap_key, '--out', bootstrap_out], 'Read explicit bootstrap publisher key')
-          run('current-seed-real-root', ['verify-serving-tree', '--v1', seed])
-          assert not bootstrap_out.exists() and not bootstrap_key.exists()
-          assert len(results) == 67
-          report = {'grain_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True, timeout=30).strip(), 'tool_sha256': digest(tool.read_bytes()), 'commands': results, 'capture_git_pids': capture_git_pids, 'capture_commit': capture_commit, 'captured_files': capture_receipt['files'], 'bundle_receipt_sha256': bundle_pin, 'current_unchanged_after_refusals': True, 'keys_created': 0, 'hosting_changed': False}
-          (root / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
-          print(json.dumps({'commands': len(results), 'cross_process_lock': 'pass', 'keys_created': 0, 'hosting_changed': False}))
-          PY
-      - name: First-publication runner boundaries and shared actual CLI checks
+          python3 crates/grain-registry-tools/ci/check_initial_cli.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --evidence "$RUNNER_TEMP/serving-evidence/initial-cli"
+      - name: Conditional publication runner boundaries
         working-directory: grain
         run: |
           set -o pipefail
           python3 -m unittest discover -s crates/grain-registry-tools/ci -p test_publish_github.py -v 2>&1 | tee "$RUNNER_TEMP/serving-evidence/publisher.log"
-          python3 crates/grain-registry-tools/ci/check_initial_cli.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --evidence "$RUNNER_TEMP/serving-evidence/initial-cli"
+
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
