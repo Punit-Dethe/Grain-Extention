@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 0105abd7124d9eeb3c14ea8e14edde73c808ba01
+          ref: 84a579ff3b7f04ee8f3bd0dcb2019d977e37eb13
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence
@@ -68,6 +68,12 @@ jobs:
         run: |
           set -o pipefail
           python3 -m unittest discover -s crates/grain-registry-tools/ci -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/serving-evidence/publisher-and-delivery.log"
+
+      - name: Explicit protected-key public CLI boundaries
+        # Disposable operator credentials only; no production key or network.
+        working-directory: grain
+        run: |
+          python3 crates/grain-registry-tools/ci/check_key_cli.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --evidence "$RUNNER_TEMP/serving-evidence/key-cli"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
