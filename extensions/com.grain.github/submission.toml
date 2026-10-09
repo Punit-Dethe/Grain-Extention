@@ -1,0 +1,20 @@
+schema = 1
+artifact_kind = "mcp-descriptor"
+id = "com.grain.github"
+version = "0.1.0"
+grain_api = "^1.0"
+source_repo = "https://github.com/Punit-Dethe/grain-github-extension"
+tag = "v0.1.0"
+commit = "3d5e1ec25e083613aa7b76c088a93ce49c24ecb5"
+summary = "Search repositories, work with issues and pull requests, and inspect workflows through GitHub's official MCP server."
+categories = ["tools"]
+license = "MIT"
+contact = "https://github.com/Punit-Dethe/grain-github-extension/issues"
+description_sha256 = "749e2f3681fe857422d994aa633eb6d59da1bfa0ca3e839e4dd9060fae683a2b"
+description_size = 1488
+
+[[media]]
+name = "cover.webp"
+sha256 = "069b0e9eac81a11fb1edfcfc869cb91c745c94d97a46008eae3eea51625617ac"
+size = 4926
+kind = "webp"

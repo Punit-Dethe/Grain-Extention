@@ -1,0 +1,84 @@
+# Local filesystem/Git acceptance only. No GitHub writes, keys, author builds or OIDC.
+name: serving-tree-checkpoint
+on:
+  push:
+    branches: [registry/trusted-provenance]
+    paths: [".github/workflows/serving-tree-checkpoint.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: serving-tree-checkpoint-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  local-serving:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          repository: Punit-Dethe/Grain
+          ref: 7baaaab004dea55983e89e7742394f3c76be5e7f
+          path: grain
+          persist-credentials: false
+      - name: Set up pinned toolchain and owned evidence
+        run: |
+          mkdir "$RUNNER_TEMP/serving-evidence"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/grain-target" >> "$GITHUB_ENV"
+          rustup toolchain install 1.96.0 --profile minimal --no-self-update
+      - name: Current maintainer regressions, clean bootstrap, Git races and Unix guards
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          set -o pipefail
+          cargo +1.96.0 test --locked -p grain-registry-tools -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/component.log"
+      - name: Build exact production CLI
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          set -o pipefail
+          cargo +1.96.0 build --locked -p grain-registry-tools 2>&1 | tee "$RUNNER_TEMP/serving-evidence/build.log"
+      - name: Existing active core trust regressions
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          set -o pipefail
+          cargo +1.96.0 test --locked -p grain-core trust:: -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/core-trust.log"
+      - name: Atomic signed store cache product regressions
+        # Product cache checks reuse this read-only pinned-source checkpoint;
+        # no desktop fixture or new Agent testing framework is involved.
+        working-directory: grain
+        env:
+          CARGO_PROFILE_DEV_DEBUG: 0
+        run: |
+          set -o pipefail
+          cargo +1.96.0 test --locked -p grain-core store_cache:: -- --test-threads=2 2>&1 | tee "$RUNNER_TEMP/serving-evidence/store-cache.log"
+      - name: Current public CLI boundaries with genuine embedded trust
+        # Unbound seed serving/no-op publication cases are retired. Successful
+        # bound publication, renewal, capture and locking use the genuine signed
+        # disposable-anchor product regressions above; no public trust bypass.
+        working-directory: grain
+        run: |
+          python3 crates/grain-registry-tools/ci/check_initial_cli.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --evidence "$RUNNER_TEMP/serving-evidence/initial-cli"
+      - name: Conditional publisher and public HTTP transport boundaries
+        working-directory: grain
+        run: |
+          set -o pipefail
+          python3 -m unittest discover -s crates/grain-registry-tools/ci -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/serving-evidence/publisher-and-delivery.log"
+
+      - name: Explicit protected-key public CLI boundaries
+        # Disposable operator credentials only; no production key or network.
+        working-directory: grain
+        run: |
+          python3 crates/grain-registry-tools/ci/check_key_cli.py --tool "$CARGO_TARGET_DIR/debug/grain-registry" --evidence "$RUNNER_TEMP/serving-evidence/key-cli"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: serving-tree-evidence
+          path: ${{ runner.temp }}/serving-evidence/
+          retention-days: 7
+          if-no-files-found: error

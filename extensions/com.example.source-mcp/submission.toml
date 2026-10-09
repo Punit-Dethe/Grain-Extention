@@ -1,0 +1,15 @@
+schema = 1
+artifact_kind = "mcp-descriptor"
+id = "com.example.source-mcp"
+version = "0.1.0"
+grain_api = "^1.0"
+source_repo = "https://github.com/Punit-Dethe/Grain-Extention"
+tag = "fixtures-mcp-v0.1.0"
+commit = "e8b9863f3b20839f1efea73d015501d686f7cfdb"
+summary = "Tools provided by Tools"
+categories = ["tools"]
+license = "MIT"
+contact = "fixture@example.invalid"
+description_sha256 = "0866ab801f43174bf3e4f2f73bd6e790cd99fa2b6e970141d52541b46f19d079"
+description_size = 33
+media = []
