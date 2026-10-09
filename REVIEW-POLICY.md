@@ -1,8 +1,17 @@
 # Source review and publication policy
 
-Every native extension and MCP descriptor, including each update, needs an
+Third-party native extensions and MCP descriptors, including each update, need an
 independent human source review at its exact pinned commit. A successful build,
 attestation, author manifest or publisher workflow is not that approval.
+
+For the tester alpha only, the maintainer explicitly authorized owner approval
+of the exact first-party `com.grain.github` 0.1.0 submission. The existing signer
+accepts a bounded `alpha_maintainer_approval` reference in operator-held policy,
+with review ID zero. It verifies the merged PR/head/author/source/listing, exact
+submission/candidate/producer pins, CI attestation, expiry and dedicated alpha
+publisher before key access. This is not an independent GitHub review. Other
+submissions and changed versions still require independent review. The exception
+is temporary and must be removed/replaced when permanent approval policy is set.
 
 ## Current contract
 
