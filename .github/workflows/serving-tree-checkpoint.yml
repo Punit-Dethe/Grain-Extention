@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 84a579ff3b7f04ee8f3bd0dcb2019d977e37eb13
+          ref: 8d0acf414e31f4ee8d67e3be03116ab944a40772
           path: grain
           persist-credentials: false
       - name: Set up pinned toolchain and owned evidence

@@ -27,7 +27,7 @@ when signing; a stale approval cannot authorize changed bytes.
 2. Revalidate fresh source identity, checked artifact/listing bytes and pinned
    producer/attestation using Grain's existing review/signing commands. Keep the
    explicit publisher key outside author workspaces and build runners. The
-   current signer accepts its unencrypted Minisign key format; key custody and
+   current signer requires explicit Minisign key unlocking; key custody and
    protected approval policy are operator prerequisites, not self-certified CI.
 3. Assemble/export the complete signed hosting bundle, then commit only `v1/`
    and `.registry-publication/` above the independently expected current `main`.
