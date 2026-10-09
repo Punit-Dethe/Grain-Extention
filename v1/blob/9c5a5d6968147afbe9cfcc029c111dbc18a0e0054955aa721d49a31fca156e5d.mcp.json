@@ -1,0 +1,1 @@
+{"schema":1,"id":"com.grain.github","name":"GitHub","description":"Search repositories, work with issues and pull requests, and inspect workflows through GitHub's official MCP server.","version":"0.1.0","grainApi":"^1.0","transport":{"type":"streamable-http","url":"https://api.githubcopilot.com/mcp/"},"authentication":{"type":"oauth"}}
