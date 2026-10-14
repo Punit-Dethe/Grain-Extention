@@ -1,11 +1,11 @@
 schema = 1
 artifact_kind = "mcp-descriptor"
 id = "com.grain.github"
-version = "0.1.0"
+version = "0.1.1"
 grain_api = "^1.0"
 source_repo = "https://github.com/Punit-Dethe/grain-github-extension"
-tag = "v0.1.0"
-commit = "3d5e1ec25e083613aa7b76c088a93ce49c24ecb5"
+tag = "v0.1.1"
+commit = "394176037b46ecbfde34d7af0996a505b3352400"
 summary = "Search repositories, work with issues and pull requests, and inspect workflows through GitHub's official MCP server."
 categories = ["tools"]
 license = "MIT"
