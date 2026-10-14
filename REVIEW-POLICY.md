@@ -5,7 +5,9 @@ independent human source review at its exact pinned commit. A successful build,
 attestation, author manifest or publisher workflow is not that approval.
 
 For the tester alpha only, the maintainer explicitly authorized owner approval
-of the exact first-party `com.grain.github` 0.1.0 submission. The existing signer
+of the exact first-party `com.grain.github` 0.1.1 submission on 14 October 2026,
+source `394176037b46ecbfde34d7af0996a505b3352400`. This replaces the 0.1.0 exception;
+it does not authorize both versions or other submissions. The existing signer
 accepts a bounded `alpha_maintainer_approval` reference in operator-held policy,
 with review ID zero. It verifies the merged PR/head/author/source/listing, exact
 submission/candidate/producer pins, CI attestation, expiry and dedicated alpha
