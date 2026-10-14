@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: ed55bf1df86dcd994fb43cecdb8f1abf033de8d7
+          ref: 0461eb2ca946f5634dd000406b5dc29b4452defb
           path: grain
           persist-credentials: false
       - name: Build pinned trusted maintainer tools
@@ -136,7 +136,7 @@ jobs:
         run: |
           args=()
           if [ "$KIND" = native ]; then args+=(--native-result "$RUNNER_TEMP/native-result"); fi
-          python3 registry/ci/provenance/prepare-source.py --tool "$RUNNER_TEMP/toolbox/grain-registry" --tool-sha256 "$TOOL_SHA256" --submission "registry/extensions/$SUBMISSION_ID" --source source --out "$RUNNER_TEMP/checked-source" --grain-commit ed55bf1df86dcd994fb43cecdb8f1abf033de8d7 "${args[@]}"
+          python3 registry/ci/provenance/prepare-source.py --tool "$RUNNER_TEMP/toolbox/grain-registry" --tool-sha256 "$TOOL_SHA256" --submission "registry/extensions/$SUBMISSION_ID" --source source --out "$RUNNER_TEMP/checked-source" --grain-commit 0461eb2ca946f5634dd000406b5dc29b4452defb "${args[@]}"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: checked-source-${{ inputs.submission_id }}

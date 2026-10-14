@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 7baaaab004dea55983e89e7742394f3c76be5e7f
+          ref: 0461eb2ca946f5634dd000406b5dc29b4452defb
           path: grain
           persist-credentials: false
       - name: Validate independent inputs before candidate checkout
