@@ -6,8 +6,10 @@ attestation, author manifest or publisher workflow is not that approval.
 
 For the tester alpha only, the maintainer explicitly authorized owner approval
 of the exact first-party `com.grain.github` 0.1.1 submission on 14 October 2026,
-source `394176037b46ecbfde34d7af0996a505b3352400`. This replaces the 0.1.0 exception;
-it does not authorize both versions or other submissions. The existing signer
+source `394176037b46ecbfde34d7af0996a505b3352400`. This replaces its 0.1.0 exception.
+The maintainer separately approved exact first-party `com.grain.notion` 0.1.0
+in PR 4 on 14 October 2026, source `401f784ec986c4bf183594549dd75eedb057cb9d`.
+These approvals do not authorize other versions or submissions. The existing signer
 accepts a bounded `alpha_maintainer_approval` reference in operator-held policy,
 with review ID zero. It verifies the merged PR/head/author/source/listing, exact
 submission/candidate/producer pins, CI attestation, expiry and dedicated alpha
