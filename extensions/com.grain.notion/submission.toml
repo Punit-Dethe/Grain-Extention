@@ -1,0 +1,20 @@
+schema = 1
+artifact_kind = "mcp-descriptor"
+id = "com.grain.notion"
+version = "0.1.0"
+grain_api = "^1.0"
+source_repo = "https://github.com/Punit-Dethe/grain-notion-extension"
+tag = "v0.1.0"
+commit = "401f784ec986c4bf183594549dd75eedb057cb9d"
+summary = "Search, read and organize your pages and databases with Notion's official hosted tools."
+categories = ["tools"]
+license = "MIT"
+contact = "https://github.com/Punit-Dethe/grain-notion-extension/issues"
+description_sha256 = "d53471d4f5d8b7c00757f28281012e9587675f113ed2142695b64af0bf633897"
+description_size = 1210
+
+[[media]]
+name = "cover.webp"
+sha256 = "00041d8cb930597ee9086524589c46161e69d62a1e83dc15d3192e562fd50e39"
+size = 7868
+kind = "webp"
