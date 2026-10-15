@@ -85,8 +85,9 @@ Do not merge it or push `main` through another route.
 
 Review the exact tuple and approved workflow/tooling revision. Confirm the actual
 GitHub dispatch, environment and branch controls are suitable; an environment
-named `publish` does not itself enforce approval. The current tester protection
-and ownership adoption are still operator decisions, not completed by this doc.
+named `publish` does not itself enforce approval. The current maintainer approved
+tester ownership adoption on 16 October 2026. Other operators must adopt their
+own reviewed current policy; production protection remains an operator decision.
 After authorization, dispatch the existing workflow once:
 
 ```text

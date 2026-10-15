@@ -65,7 +65,7 @@ than hotlinking author/provider images at runtime.
 Published `(ID, version)` entries are immutable. Artwork-only changes currently
 need a new extension version/tag and exact candidate approval. This does not
 require a new Grain installer. Existing tester exceptions never approve a
-new source commit automatically. The proposed [ownership/review policy](REVIEW-POLICY.md)
+new source commit automatically. The [ownership/review policy](REVIEW-POLICY.md)
 defines ID enrollment, permitted submitters and exact per-release approvals;
 authors cannot enroll themselves by modifying `ownership.json`. OAuth app registration and account consent
 are separate from source publication and never supplied by artwork metadata.
