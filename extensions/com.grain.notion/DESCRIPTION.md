@@ -15,7 +15,7 @@ Try asking:
 > Create a test page with the meeting notes we just discussed.
 
 Available actions depend on Notion's tools, your account permissions and workspace
-policies. Review the requested action in Grain before approving changes.
+policies. Execution follows Grain's configured Agent settings.
 
 ## Account access
 
