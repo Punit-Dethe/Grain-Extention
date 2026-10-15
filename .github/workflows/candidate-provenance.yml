@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 1be8a2c0b6f657461aebe5291a20ec379d23135b
+          ref: 3e5862451f556f766391e47167d0c4ddecab5da7
           persist-credentials: false
           path: grain
       - name: Build pinned maintainer tools, with no OIDC or publishing credentials

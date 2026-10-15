@@ -1,11 +1,11 @@
 schema = 1
 artifact_kind = "mcp-descriptor"
 id = "com.grain.github"
-version = "0.1.1"
+version = "0.1.2"
 grain_api = "^1.0"
 source_repo = "https://github.com/Punit-Dethe/grain-github-extension"
-tag = "v0.1.1"
-commit = "394176037b46ecbfde34d7af0996a505b3352400"
+tag = "v0.1.2"
+commit = "d5ae55e7dafaa0f9749a05f1518d0152bffcc803"
 summary = "Search repositories, work with issues and pull requests, and inspect workflows through GitHub's official MCP server."
 categories = ["tools"]
 license = "MIT"
@@ -15,6 +15,24 @@ description_size = 1488
 
 [[media]]
 name = "cover.webp"
-sha256 = "069b0e9eac81a11fb1edfcfc869cb91c745c94d97a46008eae3eea51625617ac"
-size = 4926
+sha256 = "171bd8726f7ee6863422fabc01daf88ec23b7944bfe73783a9d0d6c768fcce1b"
+size = 469154
 kind = "webp"
+
+[[media]]
+name = "02-code.webp"
+sha256 = "46a4abb1d2d57a77e22b6d8828a349a9db9835deada236675f2b0381427d8f76"
+size = 136296
+kind = "webp"
+
+[[media]]
+name = "03-repository.webp"
+sha256 = "eb135688a578f55fae7d8e40d8df2f0a51d7df0eeb2d8d25f1ec2817d7ffb57b"
+size = 62054
+kind = "webp"
+
+[[media]]
+name = "icon.png"
+sha256 = "7d10ffe0e3067c39c9a490f1afa56c75e22ac5d30004db1b00d9b5e3f3c54042"
+size = 23034
+kind = "png"
