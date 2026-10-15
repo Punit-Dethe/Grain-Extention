@@ -1,0 +1,1 @@
+{"schema":1,"id":"com.grain.notion","name":"Notion","description":"Search, read and organize your pages and databases with Notion's official hosted tools.","version":"0.1.1","grainApi":"^1.0","transport":{"type":"streamable-http","url":"https://mcp.notion.com/mcp"},"authentication":{"type":"oauth"}}
