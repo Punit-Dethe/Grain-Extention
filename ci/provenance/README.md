@@ -1,5 +1,13 @@
 # Candidate provenance checkpoint
 
+Current operator entry point: [PUBLISHING.md](../../PUBLISHING.md). The supported
+source builder and activation workflow share `ci/grain-tooling-commit.txt` from
+the reviewed registry revision. Source preparation records that exact selection
+in producer metadata. The schema-3 signer requires current operator ownership
+and exact independent review or eligible explicit maintainer approval, separately
+from CI success. The older fixture lanes below are historical test infrastructure,
+not a second production publication route or evidence of adopted operator controls.
+
 ## Pinned remote source handoff
 
 `build-source-candidate.yml` is the provisional reusable source lane. It validates
@@ -26,18 +34,17 @@ output path, private source credentials, live MCP process or automatic approval.
 on isolated `fixtures/native-tools` and `fixtures/mcp-tools` branches, with exact
 release-tag commits in `extensions/com.example.source-*/submission.toml`. These
 are real remote source/tag inputs, not ownership or human review certification.
-The schema-2 Grain signer separately requires a merged registry PR and the latest
-effective independent GitHub approval for its exact reviewed head, matching merged
+The current schema-3 Grain signer separately requires a merged registry PR and
+exact effective approval under the adopted ownership policy, matching merged
 submission/listing bytes. A CI success or attestation cannot satisfy that gate.
-Never supply a publishing key to these workflows or merge the incomplete legacy
-publisher as part of this checkpoint.
+Never supply a publishing key to these build/attestation workflows.
 
 Cleanup ledger: both `fixtures/*-tools` branches and `fixtures-*-v0.1.0` tags,
 the two example submissions, the branch-push checkpoint wrapper and its retained
 artifacts are temporary controlled regression inputs. Retire them after reviewed
 real author submissions replace this evidence; retain the reusable source lane.
-The older controlled fixture lane below remains historical coverage under the
-physical-removal hold; do not grow either lane into an Agent harness.
+The older controlled fixture lane below remains historical coverage; do not grow
+either lane into an Agent harness. There is no legacy-compatibility removal hold.
 
 ## Earlier controlled provenance lane
 
@@ -62,11 +69,11 @@ Independently approve the exact workflow/source commit and producer digests befo
 using the bundle with `sign-reviewed-candidate`. Merely downloading this metadata
 does not establish review authority.
 
-The legacy `build-and-check.yml` and `publish.yml` are unchanged and remain
-incomplete; their presence/activity is not production approval. This new branch
-lane does not repair or activate them. Before production, require actual pinned
-author source/build isolation, protected review-derived policy, branch/environment
-protection verification, complete signed serving paths and serialized promotion.
+The maintained `build-and-check.yml` now calls the isolated source builder;
+`publish.yml` activates already signed commit-bound bundles and checks HTTP.
+Their presence/activity is not production approval. Before community release,
+review/adopt operator ownership and custody, verify actual branch/environment
+controls and complete the remaining live update/application acceptance gates.
 
 Maintenance: this is a narrow product provenance regression, not another Agent
 harness. Keep the two data fixtures only while they prove the signing interface.

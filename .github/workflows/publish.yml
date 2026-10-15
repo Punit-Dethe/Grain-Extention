@@ -48,8 +48,19 @@ jobs:
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
+          path: registry
+          persist-credentials: false
+      - name: Select the same reviewed tooling as source preparation
+        id: tooling
+        shell: bash
+        run: |
+          pin=$(cat registry/ci/grain-tooling-commit.txt)
+          [[ "$pin" =~ ^[0-9a-f]{40}$ ]] || { echo "Expected one full Grain tooling commit" >&2; exit 1; }
+          echo "commit=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
           repository: Punit-Dethe/Grain
-          ref: 2874245499c16155ba75e58745596f1573a5fbe2
+          ref: ${{ steps.tooling.outputs.commit }}
           path: grain
           persist-credentials: false
       - name: Validate independent inputs before candidate checkout
