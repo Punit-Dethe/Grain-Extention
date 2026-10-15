@@ -1,0 +1,170 @@
+{
+  "entries": [
+    {
+      "artifact_kind": "mcp-descriptor",
+      "author": "Punit-Dethe",
+      "capabilities": [],
+      "categories": [
+        "tools"
+      ],
+      "description": "Search repositories, work with issues and pull requests, and inspect workflows through GitHub's official MCP server.",
+      "id": "com.grain.github",
+      "installs": 0,
+      "listing": {
+        "sha256": "749e2f3681fe857422d994aa633eb6d59da1bfa0ca3e839e4dd9060fae683a2b",
+        "size": 1488
+      },
+      "media": [
+        {
+          "kind": "webp",
+          "sha256": "069b0e9eac81a11fb1edfcfc869cb91c745c94d97a46008eae3eea51625617ac",
+          "size": 4926
+        }
+      ],
+      "min_grain_api": "1.0",
+      "name": "GitHub",
+      "readme": "",
+      "repo": "https://github.com/Punit-Dethe/grain-github-extension",
+      "reviewed_at": "2026-10-09",
+      "reviewed_commit": "3d5e1ec25e083613aa7b76c088a93ce49c24ecb5",
+      "sha256": "9c5a5d6968147afbe9cfcc029c111dbc18a0e0054955aa721d49a31fca156e5d",
+      "size": 337,
+      "source_commit": "3d5e1ec25e083613aa7b76c088a93ce49c24ecb5",
+      "stars": 0,
+      "tier": "scripted",
+      "trust": "verified",
+      "updated_at": "2026-10-09",
+      "version": "0.1.0"
+    },
+    {
+      "artifact_kind": "mcp-descriptor",
+      "author": "Punit-Dethe",
+      "capabilities": [],
+      "categories": [
+        "tools"
+      ],
+      "description": "Search repositories, work with issues and pull requests, and inspect workflows through GitHub's official MCP server.",
+      "id": "com.grain.github",
+      "installs": 0,
+      "listing": {
+        "sha256": "749e2f3681fe857422d994aa633eb6d59da1bfa0ca3e839e4dd9060fae683a2b",
+        "size": 1488
+      },
+      "media": [
+        {
+          "kind": "webp",
+          "sha256": "069b0e9eac81a11fb1edfcfc869cb91c745c94d97a46008eae3eea51625617ac",
+          "size": 4926
+        }
+      ],
+      "min_grain_api": "1.0",
+      "name": "GitHub",
+      "readme": "",
+      "repo": "https://github.com/Punit-Dethe/grain-github-extension",
+      "reviewed_at": "2026-10-14",
+      "reviewed_commit": "394176037b46ecbfde34d7af0996a505b3352400",
+      "sha256": "c4654a41517ddd3fc03fad95e8ac4128cffc43b2cfadc2fb85316896b0b04e2a",
+      "size": 372,
+      "source_commit": "394176037b46ecbfde34d7af0996a505b3352400",
+      "stars": 0,
+      "tier": "scripted",
+      "trust": "verified",
+      "updated_at": "2026-10-14",
+      "version": "0.1.1"
+    },
+    {
+      "artifact_kind": "mcp-descriptor",
+      "author": "Punit-Dethe",
+      "capabilities": [],
+      "categories": [
+        "tools"
+      ],
+      "description": "Search, read and organize your pages and databases with Notion's official hosted tools.",
+      "id": "com.grain.notion",
+      "installs": 0,
+      "listing": {
+        "sha256": "d53471d4f5d8b7c00757f28281012e9587675f113ed2142695b64af0bf633897",
+        "size": 1210
+      },
+      "media": [
+        {
+          "kind": "webp",
+          "sha256": "00041d8cb930597ee9086524589c46161e69d62a1e83dc15d3192e562fd50e39",
+          "size": 7868
+        }
+      ],
+      "min_grain_api": "1.0",
+      "name": "Notion",
+      "readme": "",
+      "repo": "https://github.com/Punit-Dethe/grain-notion-extension",
+      "reviewed_at": "2026-10-14",
+      "reviewed_commit": "401f784ec986c4bf183594549dd75eedb057cb9d",
+      "sha256": "04040f67fa5c43986621bedc8568c1fd876225f0f56672030b2f1cb3286242f6",
+      "size": 300,
+      "source_commit": "401f784ec986c4bf183594549dd75eedb057cb9d",
+      "stars": 0,
+      "tier": "scripted",
+      "trust": "verified",
+      "updated_at": "2026-10-14",
+      "version": "0.1.0"
+    },
+    {
+      "artifact_kind": "mcp-descriptor",
+      "author": "Punit-Dethe",
+      "capabilities": [],
+      "categories": [
+        "tools"
+      ],
+      "description": "Search repositories, work with issues and pull requests, and inspect workflows through GitHub's official MCP server.",
+      "icon": {
+        "kind": "png",
+        "sha256": "7d10ffe0e3067c39c9a490f1afa56c75e22ac5d30004db1b00d9b5e3f3c54042",
+        "size": 23034
+      },
+      "id": "com.grain.github",
+      "installs": 0,
+      "listing": {
+        "sha256": "749e2f3681fe857422d994aa633eb6d59da1bfa0ca3e839e4dd9060fae683a2b",
+        "size": 1488
+      },
+      "media": [
+        {
+          "kind": "webp",
+          "sha256": "171bd8726f7ee6863422fabc01daf88ec23b7944bfe73783a9d0d6c768fcce1b",
+          "size": 469154
+        },
+        {
+          "kind": "webp",
+          "sha256": "46a4abb1d2d57a77e22b6d8828a349a9db9835deada236675f2b0381427d8f76",
+          "size": 136296
+        },
+        {
+          "kind": "webp",
+          "sha256": "eb135688a578f55fae7d8e40d8df2f0a51d7df0eeb2d8d25f1ec2817d7ffb57b",
+          "size": 62054
+        }
+      ],
+      "min_grain_api": "1.0",
+      "name": "GitHub",
+      "readme": "",
+      "repo": "https://github.com/Punit-Dethe/grain-github-extension",
+      "reviewed_at": "2026-10-15",
+      "reviewed_commit": "d5ae55e7dafaa0f9749a05f1518d0152bffcc803",
+      "sha256": "0a0b7ac09986a73000164ebaa6843c50c935f70a0197a2925c8d59e2f2a789bc",
+      "size": 372,
+      "source_commit": "d5ae55e7dafaa0f9749a05f1518d0152bffcc803",
+      "stars": 0,
+      "tier": "scripted",
+      "trust": "verified",
+      "updated_at": "2026-10-15",
+      "version": "0.1.2"
+    }
+  ],
+  "expires": "2026-11-14T07:43:13.091269100+00:00",
+  "generation": {
+    "revocations_sha256": "2441c9432aa2692353ca35869c516ee5686d409e5d3a45ebcacb853484780ff6",
+    "roots_sha256": "bf998ffa0e625d2e3a52b29de2d99999a796fd58168c86f8b233f79d4e3511d7"
+  },
+  "spec": 1,
+  "version": 6
+}
