@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "registry_repo": "Punit-Dethe/Grain-Extention",
+  "registry_ref": "refs/heads/main",
+  "publishing_public_key": "RWREj+hdLljbWOv3LCoTKEPv670pVG+P9knBUMWoR+V445yvdBwBuqj8",
+  "reviewers": ["Punit-Dethe"],
+  "extensions": [
+    {
+      "id": "com.grain.github",
+      "source_repo": "https://github.com/Punit-Dethe/grain-github-extension",
+      "artifact_kind": "mcp-descriptor",
+      "maintainers": ["Punit-Dethe"],
+      "allow_maintainer_approval": true
+    },
+    {
+      "id": "com.grain.notion",
+      "source_repo": "https://github.com/Punit-Dethe/grain-notion-extension",
+      "artifact_kind": "mcp-descriptor",
+      "maintainers": ["Punit-Dethe"],
+      "allow_maintainer_approval": true
+    }
+  ]
+}

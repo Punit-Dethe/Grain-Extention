@@ -1,8 +1,56 @@
 # Source review and publication policy
 
-Third-party native extensions and MCP descriptors, including each update, need an
-independent human source review at its exact pinned commit. A successful build,
-attestation, author manifest or publisher workflow is not that approval.
+## Ownership policy proposal — operator adoption pending
+
+`ownership.json` records extension IDs, canonical GitHub sources, artifact kinds,
+authorized registry submitters and eligible reviewers. It is public reviewable
+intent, not a credential or automatically trusted file. This draft proposes the
+two existing first-party IDs under the current maintainer and publishing key.
+It does not change hosted metadata, installed extensions, OAuth or permissions.
+
+Before using the new signer, review this configuration and adopt its exact bytes
+into the current protected operator location outside author/build workspaces.
+The signer requires `--authority` and schema-3 approval policy containing its
+`authority_sha256`, in addition to the independent approval-policy digest. Never
+use an author-provided file/digest as the approval trust anchor. Operator custody
+of the current file matters: supplying an old copy alongside an old approval
+would be an operator trust-boundary violation. GitHub branch/environment controls
+and key custody require a separate reviewed operational decision; this proposal
+does not configure them or claim that they already exist.
+
+External submissions, including updates, require a live independent GitHub review
+from an eligible reviewer. The PR submitter must be an authorized maintainer for
+the ID/source/kind. First-party grants may explicitly opt into
+`allow_maintainer_approval`: an eligible reviewer who is also a listed owner may
+then provide an exact per-release operator approval reference in
+`maintainer_approval`, with review ID zero. The reference is an audit record,
+not a separate authenticated credential or independent GitHub review. Policy
+custody and its independently selected digest establish authorization. The grant
+does not approve a version by itself. Every release still binds the merged PR,
+head, submitter, source/listing, candidate, producer, previous index and current
+publishing identity, with approval expiry of at most seven days. Successful CI
+or an author's manifest never grants review authority.
+
+### Enrollment, transfer and withdrawal
+
+- New IDs: review source-repository control, ID, artifact kind and submitting
+  accounts, then separately approve enrollment. A submission cannot reserve or
+  take over an ID by declaring a name.
+- Updates: keep the registered identity and approve the new exact version. No
+  Grain source edit or compiled per-version exception is required.
+- Transfers/source or kind changes: record consent from current and receiving
+  owners, review the new source, then explicitly change the grant. Review changes
+  to maintainers, reviewers or self-approval eligibility as authority changes,
+  separately from an author's release PR.
+- Withdrawal: remove the grant/account/reviewer from the protected current file;
+  changed ownership bytes invalidate prior pinned approvals. Reapprove other
+  pending releases against the new digest. Withdrawing a published extension
+  additionally requires the existing signed revocation/publication procedure;
+  removing ownership only stops future signing.
+
+See Grain's maintained [signer/ownership runbook](https://github.com/Punit-Dethe/Grain/blob/extensions/main-integration-20261010/crates/grain-registry-tools/README.md#ownership-enrollment-and-changes).
+
+## Historical tester approvals
 
 For the tester alpha only, the maintainer explicitly reauthorized publication
 of these exact first-party artwork candidates on 15 October 2026, superseding
@@ -16,13 +64,12 @@ the earlier accidental approval/withdrawal in the same session:
 These replace the earlier GitHub0.1.1 / Notion0.1.0 signing exceptions, not
 existing published entries. The user's authorization is recorded in the Grain
 progress document; it is not presented as an independent GitHub review.
-These approvals do not authorize other versions or submissions. The existing signer
-accepts a bounded `alpha_maintainer_approval` reference in operator-held policy,
-with review ID zero. It verifies the merged PR/head/author/source/listing, exact
-submission/candidate/producer pins, CI attestation, expiry and dedicated alpha
-publisher before key access. This is not an independent GitHub review. Other
-submissions and changed versions still require independent review. The exception
-is temporary and must be removed/replaced when permanent approval policy is set.
+These approvals do not authorize other versions or submissions. They used the
+previous tester-only signer profile; schema-3 tooling refuses that old policy
+format and its `alpha_maintainer_approval` field. Existing signed publications
+remain unchanged. New releases require adoption of the ownership configuration
+and a fresh exact approval through one of the routes above. No earlier chat
+approval is silently converted into authorization for a future candidate.
 
 ## Current contract
 

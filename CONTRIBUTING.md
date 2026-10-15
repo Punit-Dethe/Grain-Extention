@@ -19,9 +19,10 @@ alpha/release; it does not require publishing an extension.
    from the project root. This writes a local submission; it does not create a
    GitHub PR or publish the extension. Commit it on a registry branch and open a PR.
 
-For an update, the CLI refuses to overwrite an existing submission directory.
-Generate the new submission in a separate empty draft directory, then review and
-replace the matching `extensions/<id>/` metadata on your update branch. Never
+For an update, use `grain-ext submit --update-from <current-registry-version>`
+with the new version/tag/commit and the same approved source and artifact kind.
+The maintained CLI validates and replaces the complete draft under a per-ID lock;
+it refuses stale or unrelated contents. Review the resulting metadata diff. Never
 edit served `v1` data by hand. The authoring contract is provisional; use the
 same maintained checker version as registry CI.
 
@@ -58,7 +59,9 @@ than hotlinking author/provider images at runtime.
 Published `(ID, version)` entries are immutable. Artwork-only changes currently
 need a new extension version/tag and exact candidate approval. This does not
 require a new Grain installer. Existing tester exceptions never approve a
-new source commit automatically. OAuth app registration and account consent
+new source commit automatically. The proposed [ownership/review policy](REVIEW-POLICY.md)
+defines ID enrollment, permitted submitters and exact per-release approvals;
+authors cannot enroll themselves by modifying `ownership.json`. OAuth app registration and account consent
 are separate from source publication and never supplied by artwork metadata.
 
 See the maintained Grain [CLI guide](https://github.com/Punit-Dethe/Grain/blob/extensions/main-integration-20261010/crates/grain-ext-cli/README.md)
