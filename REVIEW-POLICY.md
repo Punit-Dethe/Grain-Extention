@@ -4,11 +4,18 @@ Third-party native extensions and MCP descriptors, including each update, need a
 independent human source review at its exact pinned commit. A successful build,
 attestation, author manifest or publisher workflow is not that approval.
 
-For the tester alpha only, the maintainer explicitly authorized owner approval
-of the exact first-party `com.grain.github` 0.1.1 submission on 14 October 2026,
-source `394176037b46ecbfde34d7af0996a505b3352400`. This replaces its 0.1.0 exception.
-The maintainer separately approved exact first-party `com.grain.notion` 0.1.0
-in PR 4 on 14 October 2026, source `401f784ec986c4bf183594549dd75eedb057cb9d`.
+For the tester alpha only, the maintainer explicitly reauthorized publication
+of these exact first-party artwork candidates on 15 October 2026, superseding
+the earlier accidental approval/withdrawal in the same session:
+
+- `com.grain.github` 0.1.2, source `d5ae55e7dafaa0f9749a05f1518d0152bffcc803`,
+  structured submission SHA256 `6e434021102e57675b2fe1edd2b65a851878c4dfff277444091ac03c7caeb127`.
+- `com.grain.notion` 0.1.1, source `d44b782581702935d5b1c5f75457d3ac2bac7b70`,
+  structured submission SHA256 `b486000c5c953a3a4491d70cdd90fbfb90fa75e93f20a5b7af4ab730f25c35bb`.
+
+These replace the earlier GitHub0.1.1 / Notion0.1.0 signing exceptions, not
+existing published entries. The user's authorization is recorded in the Grain
+progress document; it is not presented as an independent GitHub review.
 These approvals do not authorize other versions or submissions. The existing signer
 accepts a bounded `alpha_maintainer_approval` reference in operator-held policy,
 with review ID zero. It verifies the merged PR/head/author/source/listing, exact

@@ -1,109 +1,66 @@
-# Contributing an extension
+# Publishing a Grain extension
 
-Submitting is a pull request that adds **one directory** under `extensions/`.
-You submit a *source pointer*, never a built artifact.
+Grain extensions provide Agent tools. They can run native tool code or describe
+an existing remote MCP service. Users install either kind through the same store.
+Retired screen/context/prompt/OS extension APIs are not part of this contract.
+Custom MCP configuration is a separate application feature, currently hidden in
+alpha/release; it does not require publishing an extension.
 
-## The author's path
+## Author checklist
 
-```bash
-grain-ext init my-extension     # scaffold: manifest + entry + generated types
-grain-ext dev                   # build → run in Grain → hot reload
-grain-ext doctor                # the EXACT checks CI will run, locally
-grain-ext submit                # opens the PR against grain-extensions
-```
+1. Create a project with Grain's maintained `grain-ext` CLI and document the
+   source setup in `README.md`. Put user-facing store content in `DESCRIPTION.md`.
+2. Add the listing artwork described below. Keep provider credentials and secrets
+   out of the descriptor, repository, listing and submission.
+3. Run `grain-ext doctor` and `grain-ext pack`. Push the source commit and a fixed
+   version tag to your GitHub source repository.
+4. Run `grain-ext submit --registry <local-registry> --repo <source-repo-url>
+   --tag <fixed-tag> --commit <full-commit-id> --license MIT --contact <contact>`
+   from the project root. This writes a local submission; it does not create a
+   GitHub PR or publish the extension. Commit it on a registry branch and open a PR.
 
-`submit` writes one directory to this repo and opens a pull request:
+For an update, the CLI refuses to overwrite an existing submission directory.
+Generate the new submission in a separate empty draft directory, then review and
+replace the matching `extensions/<id>/` metadata on your update branch. Never
+edit served `v1` data by hand. The authoring contract is provisional; use the
+same maintained checker version as registry CI.
 
-```
-extensions/<id>/
-  submission.toml    id, source repo, pinned tag + commit, categories, licence, contact
-  README.md          your store page — rendered in full on the detail view
-  media/
-    cover.webp       the card image (16:9). WEBP or GIF. Shown first, everywhere.
-    *.webp | *.gif   further screenshots, in filename order
-```
+## Artwork contract
 
-## Your store listing (just drop the files in)
+| File | Limits | Placement |
+| --- | --- | --- |
+| `media/icon.png` | Exactly 512×512 PNG, at most 512 KiB | Square title/Installed icon |
+| `media/cover.webp` or `cover.gif` | Wide gallery image, at most 4 MiB | Store card and first detail hero |
+| Further `media/*.webp` / `*.gif` | Same gallery rules, filename order | Further detail previews |
 
-There is **no extra metadata file** to write. The listing is assembled from
-files you already keep:
+Gallery images must be 640–2048px wide and 360–1152px high, with an aspect ratio
+between 3:2 and 2:1. Recommended: **1280×720**. Grain displays the full image
+inside a 16:9 viewport without stretching/cropping. Square logos are not gallery
+images. Up to six gallery images plus one icon; total description/artwork budget
+16 MiB. DESCRIPTION is nonempty UTF-8 Markdown, at most 64 KiB. Directories are
+flat with no symlinks, duplicate names, or multiple covers. Image decoding is
+bounded; GIF checks inspect its first frame, not the entire animation.
 
-| What the store shows | Where it comes from |
-|---|---|
-| Name, version, capabilities | `manifest.json` |
-| One-line description on the card | `description` in `manifest.json` |
-| Cover image (top of the card) | `media/cover.webp` (or `.gif`) |
-| Screenshots on the detail page | the rest of `media/` |
-| The full detail page body | `README.md` |
-| Install count | measured by us; you never supply it |
+Artwork is optional, but provide both roles for a complete listing. Missing
+icons use a neutral initial, not the gallery cover. Native extensions also keep
+their packaged 512×512 PNG runtime icon. Include attribution/permission for all
+artwork; provider marketing images do not imply provider endorsement of Grain.
 
-Images must be **WEBP or GIF** (no video, no PNG/JPEG) — they are
-content-addressed and served as small immutable blobs, so the store stays fast
-and an image can never be swapped under a published version. Keep a cover near
-16:9 and under ~200 KB.
+## Maintainer publication
 
-> **Grain's own features are not extensions.** Snippets, Context Awareness, the
-> Agent and Grain Space ship with the app and have a tab each. Grain Space was
-> briefly listed here as a `builtin`-tier pack you could install and uninstall;
-> that tier is gone, because the implementation was always compiled into Grain
-> and the "install" was a registry row in front of it. Everything on this page
-> applies to `pack`, `scripted` and `native`, which are the real ones.
+The submission pins source, tag, commit, artifact kind, description and image
+hashes/sizes. Trusted CI prepares those exact bytes, source review authorizes the
+exact candidate, and a separate protected signer creates catalogue metadata.
+Public activation verifies the complete signed bundle before updating the host.
+The client fetches content-addressed files from the signed catalogue, rather
+than hotlinking author/provider images at runtime.
 
-## Sharing prompts
+Published `(ID, version)` entries are immutable. Artwork-only changes currently
+need a new extension version/tag and exact candidate approval. This does not
+require a new Grain installer. Existing tester exceptions never approve a
+new source commit automatically. OAuth app registration and account consent
+are separate from source publication and never supplied by artwork metadata.
 
-The smallest useful extension has no code in it at all. A `pack` that carries
-`payloads.prompts` adds its prompts to the user's post-processing list, grouped
-under your extension's name so they stay distinguishable from the user's own:
-
-```json
-{
-  "manifest": { "id": "com.you.prompts", "tier": "pack", "permissions": [] },
-  "payloads": {
-    "prompts": [
-      { "id": "email", "name": "Email", "prompt": "…${output}…" }
-    ]
-  }
-}
-```
-
-Entries land under `ext:<your-id>:<prompt-id>`, so they can never collide with a
-user's prompt or another pack's, and turning your extension off removes exactly
-yours. They are read-only in Settings — a user who wants to change one copies it
-into a prompt of their own, which then survives your updates. `grain.starter-
-prompts` in `core/` is a complete worked example.
-
-## Required
-
-- A **public** source repository.
-- A **pinned tag and commit** — we build exactly that.
-- An SPDX **licence** (CI fails without one).
-- A one-line **summary**, at least one **category**, and a **contact**.
-
-## Not required
-
-- A built artifact (we build it).
-- An account, a signing key, or a payment method.
-
-## What CI checks (all blocking)
-
-- Manifest validates against `grain-sdk`; capabilities are known names.
-- **No invisible or bidirectional Unicode** anywhere in submitted source.
-- No minified/obfuscated source in the source tree (we produce the minified
-  artifact ourselves).
-- Size caps; the artifact is reproducible from the pinned commit.
-- `id` is reverse-DNS, unique, and not a near-miss of an existing id (typosquat
-  check).
-- Licence present.
-
-## Flagged capabilities
-
-Some capability combinations mean "this extension can see something private *and*
-send it somewhere". They do not block publication, but they require a written
-justification and a closer read:
-
-- `screen:capture` + `net:*`
-- `events:transcripts` + `net:*`
-- any `native` tier with `net:*`
-
-If your extension legitimately needs one, explain why in the PR. See
-[REVIEW-POLICY.md](REVIEW-POLICY.md).
+See the maintained Grain [CLI guide](https://github.com/Punit-Dethe/Grain/blob/extensions/main-integration-20261010/crates/grain-ext-cli/README.md)
+and [artwork/publishing explanation](https://github.com/Punit-Dethe/Grain/blob/extensions/main-integration-20261010/docs/Extensions%202.0/EXTENSION-ARTWORK-AND-PUBLISHING.md)
+for the author and operator details.

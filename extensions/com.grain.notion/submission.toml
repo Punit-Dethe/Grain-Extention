@@ -1,11 +1,11 @@
 schema = 1
 artifact_kind = "mcp-descriptor"
 id = "com.grain.notion"
-version = "0.1.0"
+version = "0.1.1"
 grain_api = "^1.0"
 source_repo = "https://github.com/Punit-Dethe/grain-notion-extension"
-tag = "v0.1.0"
-commit = "401f784ec986c4bf183594549dd75eedb057cb9d"
+tag = "v0.1.1"
+commit = "d44b782581702935d5b1c5f75457d3ac2bac7b70"
 summary = "Search, read and organize your pages and databases with Notion's official hosted tools."
 categories = ["tools"]
 license = "MIT"
@@ -15,6 +15,24 @@ description_size = 1210
 
 [[media]]
 name = "cover.webp"
-sha256 = "00041d8cb930597ee9086524589c46161e69d62a1e83dc15d3192e562fd50e39"
-size = 7868
+sha256 = "d2e03e7c1adf0fcbaff0a3eba3bbba69240be801a55049ac9cb0c9d2d14d0e28"
+size = 104362
 kind = "webp"
+
+[[media]]
+name = "02-home.webp"
+sha256 = "d14520dc008a29bf5f82429ecd43a18bffda660d71e0906f022032a3f54162ce"
+size = 633920
+kind = "webp"
+
+[[media]]
+name = "03-board.webp"
+sha256 = "292dd60f5aec7f194dd22b9ecc386a3558c0556c94c17205fa309fb5bd5b7693"
+size = 160254
+kind = "webp"
+
+[[media]]
+name = "icon.png"
+sha256 = "172d05ebcf113a980d0cde06bbfd6fd24ac8c0b81ebfba45e1369f7b933b9707"
+size = 43955
+kind = "png"
