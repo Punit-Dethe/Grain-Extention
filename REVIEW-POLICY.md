@@ -1,14 +1,17 @@
 # Source review and publication policy
 
-## Ownership policy proposal — operator adoption pending
+## Ownership policy and tester adoption
 
 `ownership.json` records extension IDs, canonical GitHub sources, artifact kinds,
 authorized registry submitters and eligible reviewers. It is public reviewable
-intent, not a credential or automatically trusted file. This draft proposes the
-two existing first-party IDs under the current maintainer and publishing key.
-It does not change hosted metadata, installed extensions, OAuth or permissions.
+intent, not a credential or automatically trusted file. The current maintainer
+approved registry PR 8 and adopted the exact two first-party grants on 16 October
+2026, SHA256 `d471cf0c145dd8a83b131c2e669284f026f78659e0c649f095cd8935423771c3`.
+This tester adoption is separate from each exact release approval. Other operators
+must independently review/adopt their current file. It changes no OAuth permissions
+and does not certify production GitHub protection or signing-key custody.
 
-Before using the new signer, review this configuration and adopt its exact bytes
+Before using the signer, review this configuration and adopt its exact bytes
 into the current protected operator location outside author/build workspaces.
 The signer requires `--authority` and schema-3 approval policy containing its
 `authority_sha256`, in addition to the independent approval-policy digest. Never
