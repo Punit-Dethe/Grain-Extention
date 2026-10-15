@@ -209,13 +209,64 @@
       "trust": "verified",
       "updated_at": "2026-10-15",
       "version": "0.1.1"
+    },
+    {
+      "artifact_kind": "mcp-descriptor",
+      "author": "Punit-Dethe",
+      "capabilities": [],
+      "categories": [
+        "tools"
+      ],
+      "description": "Search, read and organize your pages and databases with Notion's official hosted tools.",
+      "icon": {
+        "kind": "png",
+        "sha256": "172d05ebcf113a980d0cde06bbfd6fd24ac8c0b81ebfba45e1369f7b933b9707",
+        "size": 43955
+      },
+      "id": "com.grain.notion",
+      "installs": 0,
+      "listing": {
+        "sha256": "6c2b5fb75efcb36f703e77f4a2c3c5e57a5f4a323f66de3f0e88a985cd74aff8",
+        "size": 1200
+      },
+      "media": [
+        {
+          "kind": "webp",
+          "sha256": "d2e03e7c1adf0fcbaff0a3eba3bbba69240be801a55049ac9cb0c9d2d14d0e28",
+          "size": 104362
+        },
+        {
+          "kind": "webp",
+          "sha256": "d14520dc008a29bf5f82429ecd43a18bffda660d71e0906f022032a3f54162ce",
+          "size": 633920
+        },
+        {
+          "kind": "webp",
+          "sha256": "292dd60f5aec7f194dd22b9ecc386a3558c0556c94c17205fa309fb5bd5b7693",
+          "size": 160254
+        }
+      ],
+      "min_grain_api": "1.0",
+      "name": "Notion",
+      "readme": "",
+      "repo": "https://github.com/Punit-Dethe/grain-notion-extension",
+      "reviewed_at": "2026-10-15",
+      "reviewed_commit": "3910dfd013c5015914cf016b2e3059932cf51752",
+      "sha256": "b1fc3e203f03e344e36c88ed8b1e72fa9963da2c2139089443d27adca4aac8d0",
+      "size": 300,
+      "source_commit": "3910dfd013c5015914cf016b2e3059932cf51752",
+      "stars": 0,
+      "tier": "scripted",
+      "trust": "verified",
+      "updated_at": "2026-10-15",
+      "version": "0.1.2"
     }
   ],
-  "expires": "2026-11-14T07:43:53.138658+00:00",
+  "expires": "2026-11-14T18:58:52.453504600+00:00",
   "generation": {
     "revocations_sha256": "2441c9432aa2692353ca35869c516ee5686d409e5d3a45ebcacb853484780ff6",
     "roots_sha256": "bf998ffa0e625d2e3a52b29de2d99999a796fd58168c86f8b233f79d4e3511d7"
   },
   "spec": 1,
-  "version": 7
+  "version": 8
 }
