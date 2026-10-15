@@ -17,7 +17,10 @@ alpha/release; it does not require publishing an extension.
 4. Run `grain-ext submit --registry <local-registry> --repo <source-repo-url>
    --tag <fixed-tag> --commit <full-commit-id> --license MIT --contact <contact>`
    from the project root. This writes a local submission; it does not create a
-   GitHub PR or publish the extension. Commit it on a registry branch and open a PR.
+   GitHub PR or publish the extension. Commit it on a registry branch, push that
+   branch, then open a draft with `grain-ext pr --registry <local-registry>
+   --id <extension-id> --repo Punit-Dethe/Grain-Extention
+   --head-repo <your-account/registry-or-fork>`. Manual GitHub PRs remain supported.
 
 For an update, use `grain-ext submit --update-from <current-registry-version>`
 with the new version/tag/commit and the same approved source and artifact kind.
@@ -48,6 +51,9 @@ their packaged 512×512 PNG runtime icon. Include attribution/permission for all
 artwork; provider marketing images do not imply provider endorsement of Grain.
 
 ## Maintainer publication
+
+Maintainers start with [PUBLISHING.md](PUBLISHING.md): one sequence for selecting
+trusted CI evidence, exact review, local signing and commit-bound activation.
 
 The submission pins source, tag, commit, artifact kind, description and image
 hashes/sizes. Trusted CI prepares those exact bytes, source review authorizes the

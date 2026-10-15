@@ -88,6 +88,11 @@ when signing; a stale approval cannot authorize changed bytes.
 
 ## Build, sign, activate
 
+Use [the maintainer runbook](PUBLISHING.md) for the complete command sequence and
+recovery boundaries. `ci/grain-tooling-commit.txt` selects the single reviewed
+Grain source version for source preparation and activation. Updating this pin
+is a tooling review, not an author-controlled release input or automatic approval.
+
 1. Dispatch `build-and-check` on the trusted registry branch with the reviewed
    submission ID. The reusable builder isolates author execution from OIDC and
    signing/publication permission. MCP descriptors require no author build.

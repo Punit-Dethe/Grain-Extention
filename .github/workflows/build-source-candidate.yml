@@ -20,15 +20,23 @@ jobs:
       commit: ${{ steps.request.outputs.commit }}
       kind: ${{ steps.request.outputs.kind }}
       tool_sha256: ${{ steps.request.outputs.tool_sha256 }}
+      grain_commit: ${{ steps.tooling.outputs.commit }}
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           path: registry
           persist-credentials: false
+      - name: Select reviewed tooling for build and provenance
+        id: tooling
+        shell: bash
+        run: |
+          pin=$(cat registry/ci/grain-tooling-commit.txt)
+          [[ "$pin" =~ ^[0-9a-f]{40}$ ]] || { echo "Expected one full Grain tooling commit" >&2; exit 1; }
+          echo "commit=$pin" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: Punit-Dethe/Grain
-          ref: 3e5862451f556f766391e47167d0c4ddecab5da7
+          ref: ${{ steps.tooling.outputs.commit }}
           path: grain
           persist-credentials: false
       - name: Build pinned trusted maintainer tools
@@ -133,10 +141,11 @@ jobs:
           SUBMISSION_ID: ${{ inputs.submission_id }}
           TOOL_SHA256: ${{ needs.request.outputs.tool_sha256 }}
           KIND: ${{ needs.request.outputs.kind }}
+          GRAIN_COMMIT: ${{ needs.request.outputs.grain_commit }}
         run: |
           args=()
           if [ "$KIND" = native ]; then args+=(--native-result "$RUNNER_TEMP/native-result"); fi
-          python3 registry/ci/provenance/prepare-source.py --tool "$RUNNER_TEMP/toolbox/grain-registry" --tool-sha256 "$TOOL_SHA256" --submission "registry/extensions/$SUBMISSION_ID" --source source --out "$RUNNER_TEMP/checked-source" --grain-commit 3e5862451f556f766391e47167d0c4ddecab5da7 "${args[@]}"
+          python3 registry/ci/provenance/prepare-source.py --tool "$RUNNER_TEMP/toolbox/grain-registry" --tool-sha256 "$TOOL_SHA256" --submission "registry/extensions/$SUBMISSION_ID" --source source --out "$RUNNER_TEMP/checked-source" --grain-commit "$GRAIN_COMMIT" "${args[@]}"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: checked-source-${{ inputs.submission_id }}
