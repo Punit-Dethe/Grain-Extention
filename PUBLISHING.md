@@ -98,7 +98,7 @@ own reviewed current policy; production protection remains an operator decision.
 After authorization, dispatch the existing workflow once:
 
 ```text
-gh workflow run publish.yml --repo Punit-Dethe/Grain-Extention --ref REVIEWED_WORKFLOW_REF -f mode=update -f expected_base_commit=FULL_BASE_SHA -f candidate_commit=FULL_CANDIDATE_SHA -f candidate_receipt_sha256=RECEIPT_SHA256 -f previous_receipt_sha256=PREVIOUS_RECEIPT_SHA256
+gh workflow run publish.yml --repo Punit-Dethe/Grain-Extention --ref main -f mode=update -f expected_base_commit=FULL_BASE_SHA -f candidate_commit=FULL_CANDIDATE_SHA -f candidate_receipt_sha256=RECEIPT_SHA256 -f previous_receipt_sha256=PREVIOUS_RECEIPT_SHA256
 ```
 
 The publisher regenerates the handoff from committed signed bytes, verifies the
@@ -106,6 +106,50 @@ current remote base, pushes once with an exact lease, confirms `main`, then chec
 public HTTP delivery. Preserve its evidence/run URL. An ordinary version update
 requires no Grain source or tooling-pin edit. Git confirmation and HTTP acceptance
 are separate results; neither proves the real app/account journey by itself.
+
+The job accepts only `refs/heads/main`, checks out that run's exact commit for
+the trusted tooling pin, and refuses if it differs from the independently reviewed
+base. If main moves after preparation, reprepare/review the tuple. Source approval,
+the signed candidate and exact-lease publication checks remain unchanged. The
+workflow condition is defense in depth: it cannot protect against a branch that
+edits its own YAML. GitHub's environment must independently restrict deployment.
+
+### Proposed tester publishing environment — not automatically adopted
+
+Read-only preflight on 16 October 2026 found no environment reviewer/branch rule,
+administrator bypass allowed, no rulesets and no protection on main. The two
+`ci/publish-*.proposed.json` files are reviewable GitHub REST request bodies,
+not enforcement configuration loaded by a workflow. No script auto-applies them.
+
+- `publish-environment.proposed.json`: require Punit-Dethe (verified public user
+  ID 206300423) to approve the `publish` environment; allow self-review for this
+  single-maintainer tester lane; no wait timer; selected branches/tags only.
+- `publish-main-branch.proposed.json`: permit the branch `main` only, not a tag
+  named main. There must be no other deployment policies on this environment.
+- After separate operator approval, use `gh api --method PUT
+  repos/Punit-Dethe/Grain-Extention/environments/publish --input
+  ci/publish-environment.proposed.json`, then create the branch rule with
+  `gh api --method POST repos/Punit-Dethe/Grain-Extention/environments/publish/deployment-branch-policies
+  --input ci/publish-main-branch.proposed.json`. Re-read before applying; stop if
+  another operator has changed the reviewed baseline. Inspect existing policies
+  before creating one; do not delete rules or environments to make adoption pass.
+- Verify the reviewer identity, self-review setting and the exact single branch
+  policy by GET after adoption. API acceptance is not proof that a deployment
+  actually pauses for approval; verify that with the next separately approved
+  ordinary publication. Do not publish a dummy extension just to test the gate.
+
+Production still needs an operator to deselect **Allow administrators to bypass
+configured protection rules** in GitHub's environment settings and verify its
+state. The documented REST update and current GraphQL input do not expose that
+write field; do not send an undocumented field and assume it worked. Source/main
+branch protection is a separate decision: a PR-only rule can block the current
+`GITHUB_TOKEN` exact-base writer. Do not enable it until that writer is accounted
+for. These tester settings do not certify public community release readiness or
+signing-key backup/restore.
+
+References: [environment settings](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
+[environment API](https://docs.github.com/en/rest/deployments/environments#create-or-update-an-environment),
+[branch policy API](https://docs.github.com/en/rest/deployments/branch-policies#create-a-deployment-branch-policy).
 
 ## Recovery at the failing boundary
 
