@@ -76,6 +76,15 @@ approval is silently converted into authorization for a future candidate.
 
 ## Current contract
 
+Before publication, require a supported account route and nonsecret evidence
+that it works through Grain. Review provider registration ownership, callback/
+PKCE/public-client requirements, permissions and organization prerequisites.
+`doctor` and `pack` only verify local metadata; they do not certify provider
+registration. Secret-required or unsupported flows need a separately reviewed
+support route, not a secret in the package or developer-app setup for each user.
+The [author guide](https://github.com/Punit-Dethe/Grain/blob/extensions/main-integration-20261010/crates/grain-ext-cli/AUTHENTICATION.md)
+defines the current support matrix and how unchanged evidence can be reused.
+
 Extensions supply Agent-callable tools. They do not receive Grain prompt
 priorities, prompt customization, screen/selection/OCR, Space or OS-specific
 capabilities. Native tools use only the current SDK and declared brokered service

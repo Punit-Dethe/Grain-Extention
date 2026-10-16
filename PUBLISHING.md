@@ -8,6 +8,13 @@ uses the existing manual `publish` workflow; there is no publisher service.
 ## 1. Select the reviewed inputs
 
 Review the source/tag/commit, submission, DESCRIPTION, artwork and account setup.
+For an authenticated extension, review its declared account route and nonsecret
+Grain sign-in checkpoint against the [author authentication guide](https://github.com/Punit-Dethe/Grain/blob/extensions/main-integration-20261010/crates/grain-ext-cli/AUTHENTICATION.md).
+Local doctor/pack or provider metadata alone does not prove OAuth onboarding.
+Confirm callback/public-client requirements or an existing supported registration
+before activation; do not use manual developer credential entry as store setup.
+Reuse accepted route/runtime evidence when unchanged instead of repeating every
+OAuth test for a description update.
 Merge the exact eligible submission PR before requesting signable evidence.
 Record its PR, reviewed head and merged registry commit. The current protected
 ownership file must already authorize this ID/source/kind/submitter/reviewer;
