@@ -33,6 +33,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
+    # Dispatch only the trusted main workflow; environment rules must enforce
+    # this independently because a branch can edit its own workflow condition.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: publish
@@ -48,6 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
+          ref: ${{ github.sha }}
           path: registry
           persist-credentials: false
       - name: Select the same reviewed tooling as source preparation
@@ -67,6 +71,8 @@ jobs:
         run: |
           python3 - <<'PY'
           import os, sys
+          if os.environ['GITHUB_SHA'] != os.environ['PUBLICATION_BASE']:
+              sys.exit('Dispatch main changed from the reviewed publication base; reprepare, do not retry publication')
           sys.path.insert(0, 'grain/crates/grain-registry-tools/ci')
           from publish_github import identity
           identity(*[os.environ.get(name, '') for name in ['PUBLICATION_REPOSITORY', 'PUBLICATION_BASE', 'PUBLICATION_CANDIDATE', 'PUBLICATION_RECEIPT', 'PUBLICATION_MODE', 'PUBLICATION_PREVIOUS_RECEIPT']])
