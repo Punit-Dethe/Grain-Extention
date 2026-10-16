@@ -8,6 +8,15 @@ alpha/release; it does not require publishing an extension.
 
 ## Author checklist
 
+Choose a supported account route before submitting. The maintained
+[authentication guide](https://github.com/Punit-Dethe/Grain/blob/extensions/main-integration-20261010/crates/grain-ext-cli/AUTHENTICATION.md)
+covers anonymous access, dynamic registration, publisher-owned public clients and
+host-specific integrations. `doctor`/`pack` verify local files, not live sign-in.
+Document registration ownership and provider permissions in README, normal setup
+in DESCRIPTION, and include nonsecret Grain sign-in/read checkpoint evidence.
+An unsupported secret-required route is a support decision before publication;
+ordinary users should not need to create developer apps to use a store extension.
+
 1. Create a project with Grain's maintained `grain-ext` CLI and document the
    source setup in `README.md`. Put user-facing store content in `DESCRIPTION.md`.
 2. Add the listing artwork described below. Keep provider credentials and secrets
